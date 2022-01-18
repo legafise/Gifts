@@ -41,6 +41,27 @@ public class Certificate implements Entity {
         this.tags = tags;
     }
 
+    public Certificate(String name, String description, BigDecimal price, Duration duration, String createDate, String lastUpdateDate) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        tags = new ArrayList<>();
+    }
+
+    public Certificate(long id, String name, String description, BigDecimal price, Duration duration, String createDate, String lastUpdateDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        tags = new ArrayList<>();
+    }
+
     public long getId() {
         return id;
     }

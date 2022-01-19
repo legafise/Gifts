@@ -8,11 +8,11 @@ import java.util.Optional;
 public interface TagDao {
     boolean add(Tag tag);
 
-    Optional<Tag> findById(Long id);
+    Optional<Tag> findById(long id);
 
     List<Tag> findAll();
 
     boolean update(Tag certificate);
 
-    boolean remove(Long id);
+    boolean remove(long id);
 }

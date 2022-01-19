@@ -8,11 +8,11 @@ import java.util.Optional;
 public interface CertificateDao {
     boolean add(Certificate certificate);
 
-    Optional<Certificate> findById(Long id);
+    Optional<Certificate> findById(long id);
 
     List<Certificate> findAll();
 
     boolean update(Certificate certificate);
 
-    boolean remove(Long id);
+    boolean remove(long id);
 }

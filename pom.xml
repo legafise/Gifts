@@ -11,6 +11,7 @@
 
     <modules>
         <module>gifts-logic</module>
+        <module>gifts-web</module>
     </modules>
 
     <properties>
@@ -19,10 +20,23 @@
         <sl4j.version>1.6.1</sl4j.version>
         <mysql.connector.version>8.0.19</mysql.connector.version>
         <spring.version>5.3.13</spring.version>
+        <gifts.logic.version>1.0-SNAPSHOT</gifts.logic.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.epam</groupId>
+                <artifactId>gifts-logic</artifactId>
+                <version>${gifts.logic.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>

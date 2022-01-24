@@ -31,10 +31,22 @@ public class CertificateController {
         return certificateService.addCertificate(certificate);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     @ResponseStatus(OK)
-    public Certificate readTag(@PathVariable String id) {
+    public Certificate readCertificateById(@PathVariable String id) {
         return certificateService.findCertificateById(id);
+    }
+
+    @GetMapping("/tag/{tag}")
+    @ResponseStatus(OK)
+    public List<Certificate> readCertificatesByTagName(@PathVariable String tag) {
+        return certificateService.findCertificatesByTagName(tag);
+    }
+
+    @GetMapping("/name/{name}")
+    @ResponseStatus(OK)
+    public List<Certificate> readCertificatesByNamePart(@PathVariable String name) {
+        return certificateService.findCertificatesByNamePart(name);
     }
 
     @PutMapping("/{id}")

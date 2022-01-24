@@ -17,6 +17,16 @@ public class CertificateDaoImpl implements CertificateDao {
             " duration, create_date, last_update_date) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String ADD_TAG_TO_CERTIFICATE_SQL = "INSERT INTO gift_tags (certificate_id, tag_id)" +
             " VALUES (?, ?)";
+    private static final String FIND_CERTIFICATE_BY_TAG_NAME_SQL = "SELECT gift_certificate.id AS certificate_id," +
+            " gift_certificate.name AS gift_certificate_name, gift_certificate.description, gift_certificate.price," +
+            " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
+            " tag_id, tag.name AS tag_name FROM gifts.gift_certificate LEFT JOIN gift_tags" +
+            " ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON gift_tags.tag_id = tag.id WHERE tag.name = ?";
+    private static final String FIND_CERTIFICATE_BY_NAME_PART_SQL = "SELECT gift_certificate.id AS certificate_id," +
+            " gift_certificate.name AS gift_certificate_name, gift_certificate.description, gift_certificate.price," +
+            " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
+            " tag_id, tag.name AS tag_name FROM gifts.gift_certificate LEFT JOIN gift_tags" +
+            " ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON gift_tags.tag_id = tag.id WHERE gift_certificate.name LIKE CONCAT('%', ?, '%')";
     private static final String CLEAR_CERTIFICATE_TAGS_SQL = "DELETE FROM gift_tags WHERE certificate_id = ?";
     private static final String UPDATE_CERTIFICATE_SQL = "UPDATE gift_certificate SET name = ?, description = ?, price = ?," +
             " duration = ?, create_date = ?, last_update_date = ? WHERE id = ?";
@@ -57,6 +67,11 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
+    public List<Certificate> findByNamePart(String namePart) {
+        return jdbcTemplate.query(FIND_CERTIFICATE_BY_NAME_PART_SQL, certificateExtractor, namePart);
+    }
+
+    @Override
     public List<Certificate> findAll() {
         return jdbcTemplate.query(FIND_ALL_CERTIFICATES_SQL, certificateExtractor);
     }
@@ -71,6 +86,11 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public boolean remove(long id) {
         return 1 == jdbcTemplate.update(REMOVE_CERTIFICATE_BY_ID_SQL, id);
+    }
+
+    @Override
+    public List<Certificate> findByTagName(String tagName) {
+        return jdbcTemplate.query(FIND_CERTIFICATE_BY_TAG_NAME_SQL, certificateExtractor, tagName);
     }
 
     @Override

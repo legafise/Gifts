@@ -11,11 +11,15 @@ public interface CertificateDao {
 
     Optional<Certificate> findById(long id);
 
+    List<Certificate> findByNamePart(String namePart);
+
     List<Certificate> findAll();
 
     boolean update(Certificate certificate, long id) throws ParseException;
 
     boolean remove(long id);
+
+    List<Certificate> findByTagName(String tagName);
 
     boolean addTagToCertificate(long certificateId, long tagId);
 

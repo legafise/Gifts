@@ -70,6 +70,16 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    public List<Certificate> findCertificatesByTagName(String tagName) {
+        return certificateDao.findByTagName(tagName);
+    }
+
+    @Override
+    public List<Certificate> findCertificatesByNamePart(String name) {
+        return certificateDao.findByNamePart(name);
+    }
+
+    @Override
     @Transactional
     public Certificate updateCertificate(Certificate certificate, String id) {
         try {

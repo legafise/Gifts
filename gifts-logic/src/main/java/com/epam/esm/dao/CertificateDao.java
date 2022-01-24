@@ -13,7 +13,7 @@ public interface CertificateDao {
 
     List<Certificate> findAll();
 
-    boolean update(Certificate certificate, long id);
+    boolean update(Certificate certificate, long id) throws ParseException;
 
     boolean remove(long id);
 

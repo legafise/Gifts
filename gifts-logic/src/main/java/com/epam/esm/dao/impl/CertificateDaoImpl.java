@@ -62,10 +62,10 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public boolean update(Certificate certificate, long id) {
+    public boolean update(Certificate certificate, long id) throws ParseException {
         return 1 <= jdbcTemplate.update(UPDATE_CERTIFICATE_SQL, certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getDuration(), certificate.getCreateDate(),
-                certificate.getLastUpdateDate(), id);
+                certificate.getPrice(), certificate.getDuration(), convertISO8601ToDate(certificate.getCreateDate()),
+                convertISO8601ToDate(certificate.getLastUpdateDate()), id);
     }
 
     @Override

@@ -72,14 +72,18 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public Certificate updateCertificate(Certificate certificate, String id) {
-        if (certificateValidator.validateCertificate(certificate)
-                && certificateDao.update(certificate, Long.parseLong(id))) {
-            if (certificate.getTags().size() >= 1) {
-                certificateDao.clearCertificateTags(Long.parseLong(id));
-                addCertificateTags(Long.parseLong(id), certificate.getTags());
-            }
+        try {
+            if (certificateValidator.validateCertificate(certificate)
+                    && certificateDao.update(certificate, Long.parseLong(id))) {
+                if (certificate.getTags().size() >= 1) {
+                    certificateDao.clearCertificateTags(Long.parseLong(id));
+                    addCertificateTags(Long.parseLong(id), certificate.getTags());
+                }
 
-            return findCertificateById(id);
+                return findCertificateById(id);
+            }
+        } catch (ParseException e) {
+            throw new ServiceException(e);
         }
 
         throw new ServiceException(INVALID_CERTIFICATE_MESSAGE);

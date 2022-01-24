@@ -11,7 +11,7 @@ public class Certificate implements Entity {
     private String name;
     private String description;
     private BigDecimal price;
-    private Duration duration;
+    private short duration;
     private String createDate;
     private String lastUpdateDate;
     private List<Tag> tags;
@@ -20,7 +20,7 @@ public class Certificate implements Entity {
         tags = new ArrayList<>();
     }
 
-    public Certificate(long id, String name, String description, BigDecimal price, Duration duration, String createDate, String lastUpdateDate, List<Tag> tags) {
+    public Certificate(long id, String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -31,7 +31,7 @@ public class Certificate implements Entity {
         this.tags = tags;
     }
 
-    public Certificate(String name, String description, BigDecimal price, Duration duration, String createDate, String lastUpdateDate, List<Tag> tags) {
+    public Certificate(String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -41,7 +41,7 @@ public class Certificate implements Entity {
         this.tags = tags;
     }
 
-    public Certificate(String name, String description, BigDecimal price, Duration duration, String createDate, String lastUpdateDate) {
+    public Certificate(String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -51,7 +51,7 @@ public class Certificate implements Entity {
         tags = new ArrayList<>();
     }
 
-    public Certificate(long id, String name, String description, BigDecimal price, Duration duration, String createDate, String lastUpdateDate) {
+    public Certificate(long id, String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -94,11 +94,11 @@ public class Certificate implements Entity {
         this.price = price;
     }
 
-    public Duration getDuration() {
+    public short getDuration() {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(short duration) {
         this.duration = duration;
     }
 
@@ -153,7 +153,7 @@ public class Certificate implements Entity {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
-                ", duration=" + duration +
+                ", duration=" + duration + " days" +
                 ", createDate='" + createDate + '\'' +
                 ", lastUpdateDate='" + lastUpdateDate + '\'' +
                 ", tags=" + tags +

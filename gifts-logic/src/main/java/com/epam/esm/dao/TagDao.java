@@ -10,9 +10,11 @@ public interface TagDao {
 
     Optional<Tag> findById(long id);
 
+    Optional<Tag> findByName(String name);
+
     List<Tag> findAll();
 
-    boolean update(Tag certificate);
+    boolean update(Tag certificate, long id);
 
     boolean remove(long id);
 }

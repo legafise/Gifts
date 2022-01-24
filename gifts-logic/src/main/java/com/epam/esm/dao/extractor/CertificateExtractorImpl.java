@@ -20,6 +20,8 @@ import java.util.TimeZone;
 @Component
 public class CertificateExtractorImpl implements ResultSetExtractor<List<Certificate>> {
     private static final String CERTIFICATE_ID = "certificate_id";
+    private static final String TIME_ZONE = "UTC";
+    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm'Z'";
     private final TagMapperImpl tagMapper;
 
     @Autowired
@@ -30,8 +32,8 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
     @Override
     public List<Certificate> extractData(ResultSet resultSet) throws DataAccessException, SQLException {
         List<Certificate> certificateList = new ArrayList<>();
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
+        TimeZone tz = TimeZone.getTimeZone(TIME_ZONE);
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT_PATTERN); // Quoted "Z" to indicate UTC, no timezone offset
         df.setTimeZone(tz);
 
         while (resultSet.next()) {
@@ -40,7 +42,7 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
             certificate.setName(resultSet.getString("gift_certificate_name"));
             certificate.setDescription(resultSet.getString("description"));
             certificate.setPrice(resultSet.getBigDecimal("price"));
-            certificate.setDuration(Duration.ofDays(resultSet.getLong("duration")));
+            certificate.setDuration(resultSet.getShort("duration"));
             certificate.setCreateDate(df.format(resultSet.getDate("create_date")));
             certificate.setLastUpdateDate(df.format(resultSet.getDate("last_update_date")));
             certificate.setTags(mapCertificateTags(resultSet));

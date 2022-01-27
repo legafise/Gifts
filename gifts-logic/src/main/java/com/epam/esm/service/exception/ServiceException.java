@@ -1,4 +1,4 @@
-package com.epam.esm.service;
+package com.epam.esm.service.exception;
 
 public class ServiceException extends RuntimeException {
     public ServiceException() {

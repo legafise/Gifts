@@ -4,9 +4,13 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.service.ServiceException;
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.checker.CertificateDuplicationChecker;
 import com.epam.esm.service.collector.CertificateFullDataCollector;
+import com.epam.esm.service.exception.DuplicateCertificateException;
+import com.epam.esm.service.exception.InvalidCertificateDateFormatException;
+import com.epam.esm.service.exception.InvalidCertificateException;
+import com.epam.esm.service.exception.UnknownCertificateException;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +24,22 @@ import java.util.stream.Collectors;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
-    private static final String NONEXISTENT_CERTIFICATE_MESSAGE = "Nonexistent certificate";
-    private static final String INVALID_CERTIFICATE_MESSAGE = "Invalid certificate";
-    private static final String INVALID_CERTIFICATE_ID_MESSAGE = "Invalid certificate id";
+    private static final String NONEXISTENT_CERTIFICATE_MESSAGE = "nonexistent.certificate";
+    private static final String INVALID_CERTIFICATE_MESSAGE = "invalid.certificate";
+    private static final String INVALID_CERTIFICATE_DATE_FORMAT_MESSAGE = "invalid.date.format";
+    private static final String DUPLICATE_CERTIFICATE_MESSAGE = "duplicate.certificate";
     private final CertificateDao certificateDao;
     private final TagService tagService;
     private final CertificateValidator certificateValidator;
+    private final CertificateDuplicationChecker certificateDuplicationChecker;
     private final CertificateFullDataCollector certificateFullDataCollector;
 
     @Autowired
-    public CertificateServiceImpl(CertificateDao certificateDao, TagService tagService, CertificateValidator certificateValidator, CertificateFullDataCollector certificateFullDataCollector) {
+    public CertificateServiceImpl(CertificateDao certificateDao, TagService tagService, CertificateValidator certificateValidator, CertificateDuplicationChecker certificateDuplicationChecker, CertificateFullDataCollector certificateFullDataCollector) {
         this.certificateDao = certificateDao;
         this.tagService = tagService;
         this.certificateValidator = certificateValidator;
+        this.certificateDuplicationChecker = certificateDuplicationChecker;
         this.certificateFullDataCollector = certificateFullDataCollector;
     }
 
@@ -40,18 +47,23 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public Certificate addCertificate(Certificate certificate) {
         try {
-            if (certificateValidator.validateCertificate(certificate) && certificateDao.add(certificate)) {
-                long addedCertificateId = Collections.max(certificateDao.findAll().stream()
-                        .map(Certificate::getId)
-                        .collect(Collectors.toList()));
-                addCertificateTags(addedCertificateId, certificate.getTags());
-                return certificateDao.findById(addedCertificateId).get();
+            if (certificateValidator.validateCertificate(certificate)) {
+                if (certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)
+                        && certificateDao.add(certificate)) {
+                    long addedCertificateId = Collections.max(certificateDao.findAll().stream()
+                            .map(Certificate::getId)
+                            .collect(Collectors.toList()));
+                    addCertificateTags(addedCertificateId, certificate.getTags());
+                    return certificateDao.findById(addedCertificateId).get();
+                }
+
+                throw new DuplicateCertificateException(INVALID_CERTIFICATE_MESSAGE);
             }
         } catch (ParseException e) {
-            throw new ServiceException(e);
+            throw new InvalidCertificateDateFormatException(INVALID_CERTIFICATE_DATE_FORMAT_MESSAGE);
         }
 
-        throw new ServiceException(INVALID_CERTIFICATE_MESSAGE);
+        throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
     }
 
     @Override
@@ -66,7 +78,7 @@ public class CertificateServiceImpl implements CertificateService {
             return certificate.get();
         }
 
-        throw new ServiceException(NONEXISTENT_CERTIFICATE_MESSAGE);
+        throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
     }
 
     @Override
@@ -83,20 +95,20 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public Certificate updateCertificate(Certificate certificate, String id) {
         try {
-            if (certificateValidator.validateCertificate(certificate)
-                    && certificateDao.update(certificate, Long.parseLong(id))) {
-                if (certificate.getTags().size() >= 1) {
-                    certificateDao.clearCertificateTags(Long.parseLong(id));
-                    addCertificateTags(Long.parseLong(id), certificate.getTags());
+            if (certificateValidator.validateCertificate(certificate)) {
+                if (certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate, id)
+                        && certificateDao.update(certificate, Long.parseLong(id))) {
+                    updateCertificateTags(certificate, id);
+                    return findCertificateById(id);
                 }
 
-                return findCertificateById(id);
+                throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
             }
         } catch (ParseException e) {
-            throw new ServiceException(e);
+            throw new InvalidCertificateDateFormatException(INVALID_CERTIFICATE_DATE_FORMAT_MESSAGE);
         }
 
-        throw new ServiceException(INVALID_CERTIFICATE_MESSAGE);
+        throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
     }
 
     @Override
@@ -107,10 +119,11 @@ public class CertificateServiceImpl implements CertificateService {
             return true;
         }
 
-        throw new ServiceException(INVALID_CERTIFICATE_ID_MESSAGE);
+        throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
     }
 
     @Override
+    @Transactional
     public Certificate patchCertificate(Certificate certificate, String id) {
         Optional<Certificate> actualCertificate = certificateDao.findById(Long.parseLong(id));
         if (actualCertificate.isPresent()) {
@@ -118,7 +131,7 @@ public class CertificateServiceImpl implements CertificateService {
                     .collectFullCertificateData(certificate, actualCertificate.get()), id);
         }
 
-        throw new ServiceException(INVALID_CERTIFICATE_ID_MESSAGE);
+        throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
     }
 
     private void addCertificateTags(long certificateId, List<Tag> tags) {
@@ -128,6 +141,13 @@ public class CertificateServiceImpl implements CertificateService {
                 Tag currentTag = tagService.findTagByName(tag.getName());
                 certificateDao.addTagToCertificate(certificateId, currentTag.getId());
             });
+        }
+    }
+
+    private void updateCertificateTags(Certificate certificate, String certificateId) {
+        if (certificate.getTags().size() >= 1) {
+            certificateDao.clearCertificateTags(Long.parseLong(certificateId));
+            addCertificateTags(Long.parseLong(certificateId), certificate.getTags());
         }
     }
 }

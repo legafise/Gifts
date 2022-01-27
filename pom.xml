@@ -21,10 +21,25 @@
         <mysql.connector.version>8.0.19</mysql.connector.version>
         <spring.version>5.3.13</spring.version>
         <gifts.logic.version>1.0-SNAPSHOT</gifts.logic.version>
+        <jackson.version>2.13.0</jackson.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>gifts-logic</artifactId>

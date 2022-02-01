@@ -12,7 +12,7 @@ public class SpringWebAppInitializer extends AbstractAnnotationConfigDispatcherS
     protected Class<?>[] getServletConfigClasses() {
         return new Class[]{
                 LogicSpringConfig.class,
-                ApplicationContextConfig.class
+                WebContextConfig.class
         };
     }
 

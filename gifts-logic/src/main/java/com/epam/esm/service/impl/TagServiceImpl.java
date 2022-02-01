@@ -34,15 +34,16 @@ public class TagServiceImpl implements TagService {
     @Override
     @Transactional
     public Tag addTag(Tag tag) {
-        if (tagValidator.validateTag(tag)) {
-            if (tagDuplicationChecker.checkTagForDuplication(tag) && tagDao.add(tag)) {
-                return tagDao.findByName(tag.getName()).get();
-            }
+        if (!tagValidator.validateTag(tag)) {
+            throw new InvalidTagException(INVALID_TAG_MESSAGE);
+        }
 
+        if (!tagDuplicationChecker.checkTagForDuplication(tag)) {
             throw new DuplicateTagException(REPEATING_TAG_MESSAGE);
         }
 
-        throw new InvalidTagException(INVALID_TAG_MESSAGE);
+        tagDao.add(tag);
+        return tagDao.findByName(tag.getName()).get();
     }
 
     @Override
@@ -51,46 +52,48 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findTagById(String id) {
-        Optional<Tag> tag = tagDao.findById(Long.parseLong(id));
-        if (tag.isPresent()) {
-            return tag.get();
+    public Tag findTagById(long id) {
+        Optional<Tag> tag = tagDao.findById(id);
+        if (!tag.isPresent()) {
+            throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
         }
 
-        throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
+        return tag.get();
     }
 
     @Override
     public Tag findTagByName(String name) {
         Optional<Tag> tag = tagDao.findByName(name);
-        if (tag.isPresent()) {
-            return tag.get();
+        if (!tag.isPresent()) {
+            throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
         }
 
-        throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
+        return tag.get();
     }
 
     @Override
-    public Tag updateTag(Tag tag, String id) {
-        if (tagValidator.validateTag(tag)) {
-            if (tagDuplicationChecker.checkTagForDuplication(tag) && tagDao.update(tag, Long.parseLong(id))) {
-                return findTagById(id);
-            }
+    public Tag updateTag(Tag tag) {
+        if (!tagValidator.validateTag(tag)) {
+            throw new InvalidTagException(INVALID_TAG_MESSAGE);
+        }
 
+        if (!tagDuplicationChecker.checkTagForDuplication(tag)) {
             throw new DuplicateTagException(REPEATING_TAG_MESSAGE);
         }
 
-        throw new InvalidTagException(INVALID_TAG_MESSAGE);
+        tagDao.update(tag);
+        return findTagById(tag.getId());
     }
 
     @Override
     @Transactional
-    public boolean removeTagById(String id) {
-        if (tagDao.findById(Long.parseLong(id)).isPresent()) {
-            return tagDao.remove(Long.parseLong(id));
+    public boolean removeTagById(long id) {
+        if (!tagDao.findById(id).isPresent()) {
+            throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
         }
 
-        throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
+        tagDao.removeTagFromCertificates(id);
+        return tagDao.remove(id);
     }
 
     @Override

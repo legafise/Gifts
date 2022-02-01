@@ -8,11 +8,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -20,8 +23,12 @@ import java.util.TimeZone;
 @Component
 public class CertificateExtractorImpl implements ResultSetExtractor<List<Certificate>> {
     private static final String CERTIFICATE_ID = "certificate_id";
-    private static final String TIME_ZONE = "UTC";
-    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm'Z'";
+    private static final String GIFT_CERTIFICATE_NAME = "gift_certificate_name";
+    private static final String DESCRIPTION = "description";
+    private static final String PRICE = "price";
+    private static final String DURATION = "duration";
+    private static final String CREATE_DATE = "create_date";
+    private static final String LAST_UPDATE_DATE = "last_update_date";
     private final TagMapperImpl tagMapper;
 
     @Autowired
@@ -32,19 +39,16 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
     @Override
     public List<Certificate> extractData(ResultSet resultSet) throws DataAccessException, SQLException {
         List<Certificate> certificateList = new ArrayList<>();
-        TimeZone tz = TimeZone.getTimeZone(TIME_ZONE);
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT_PATTERN); // Quoted "Z" to indicate UTC, no timezone offset
-        df.setTimeZone(tz);
 
         while (resultSet.next()) {
             Certificate certificate = new Certificate();
             certificate.setId(resultSet.getLong(CERTIFICATE_ID));
-            certificate.setName(resultSet.getString("gift_certificate_name"));
-            certificate.setDescription(resultSet.getString("description"));
-            certificate.setPrice(resultSet.getBigDecimal("price"));
-            certificate.setDuration(resultSet.getShort("duration"));
-            certificate.setCreateDate(df.format(resultSet.getDate("create_date")));
-            certificate.setLastUpdateDate(df.format(resultSet.getDate("last_update_date")));
+            certificate.setName(resultSet.getString(GIFT_CERTIFICATE_NAME));
+            certificate.setDescription(resultSet.getString(DESCRIPTION));
+            certificate.setPrice(resultSet.getBigDecimal(PRICE));
+            certificate.setDuration(resultSet.getShort(DURATION));
+            certificate.setCreateDate(convertDateTimeToLocalDateTime(resultSet.getDate(CREATE_DATE)));
+            certificate.setLastUpdateDate(convertDateTimeToLocalDateTime(resultSet.getDate(LAST_UPDATE_DATE)));
             certificate.setTags(mapCertificateTags(resultSet));
 
             certificateList.add(certificate);
@@ -74,5 +78,11 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
 
     private List<Tag> tagListChecker(List<Tag> tagList) {
         return tagList.size() == 1 && tagList.get(0).getName() == null ? new ArrayList<>() : tagList;
+    }
+
+    private LocalDateTime convertDateTimeToLocalDateTime(Date date) {
+        return Instant.ofEpochMilli(date.getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

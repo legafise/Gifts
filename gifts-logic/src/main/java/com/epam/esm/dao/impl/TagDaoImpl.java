@@ -19,6 +19,7 @@ public class TagDaoImpl implements TagDao {
     private static final String FIND_TAG_BY_NAME_SQL = "SELECT tag.id AS tag_id, tag.name AS tag_name FROM tag WHERE tag.name = ?";
     private static final String FIND_ALL_TAGS_SQL = "SELECT tag.id AS tag_id, tag.name AS tag_name FROM tag";
     private static final String REMOVE_TAG_BY_ID_SQL = "DELETE FROM tag WHERE id = ?";
+    private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE gift_tags.tag_id = ?";
     private static final String UPDATE_TAG_SQL = "UPDATE tag SET name = ? WHERE id = ?";
     private final TagMapperImpl tagMapper;
     private final JdbcTemplate jdbcTemplate;
@@ -36,14 +37,16 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public Optional<Tag> findById(long id) {
-        List<Tag> tagList = jdbcTemplate.query(FIND_TAG_BY_NAME_SQL, new Object[]{id}, tagMapper);
-        return Objects.requireNonNull(tagList).isEmpty() ? Optional.empty() : Optional.of(tagList.get(0));
+        List<Tag> tagList = jdbcTemplate.query(FIND_TAG_BY_ID_SQL, new Object[]{id}, tagMapper);
+
+        return tagList.isEmpty() ? Optional.empty() : Optional.of(tagList.get(0));
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
         List<Tag> tagList = jdbcTemplate.query(FIND_TAG_BY_NAME_SQL, new Object[]{name}, tagMapper);
-        return Objects.requireNonNull(tagList).isEmpty() ? Optional.empty() : Optional.of(tagList.get(0));
+
+        return tagList.isEmpty() ? Optional.empty() : Optional.of(tagList.get(0));
     }
 
     @Override
@@ -52,12 +55,17 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public boolean update(Tag tag, long id) {
-        return 1 <= jdbcTemplate.update(UPDATE_TAG_SQL, tag.getName(), id);
+    public boolean update(Tag tag) {
+        return 1 <= jdbcTemplate.update(UPDATE_TAG_SQL, tag.getName(), tag.getId());
     }
 
     @Override
     public boolean remove(long id) {
         return 1 == jdbcTemplate.update(REMOVE_TAG_BY_ID_SQL, id);
+    }
+
+    @Override
+    public void removeTagFromCertificates(long id) {
+        jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL, id);
     }
 }

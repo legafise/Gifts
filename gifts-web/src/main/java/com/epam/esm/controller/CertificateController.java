@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -21,8 +22,14 @@ public class CertificateController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<Certificate> readAllCertificates() {
-        return certificateService.findAllCertificates();
+    public List<Certificate> readAllCertificates(@RequestParam Map<String, String> parameters) {
+        return certificateService.findAllCertificates(parameters);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public Certificate readCertificateById(@PathVariable long id) {
+        return certificateService.findCertificateById(id);
     }
 
     @PostMapping
@@ -31,39 +38,23 @@ public class CertificateController {
         return certificateService.addCertificate(certificate);
     }
 
-    @GetMapping("/id/{id}")
-    @ResponseStatus(OK)
-    public Certificate readCertificateById(@PathVariable String id) {
-        return certificateService.findCertificateById(id);
-    }
-
-    @GetMapping("/tag/{tag}")
-    @ResponseStatus(OK)
-    public List<Certificate> readCertificatesByTagName(@PathVariable String tag) {
-        return certificateService.findCertificatesByTagName(tag);
-    }
-
-    @GetMapping("/name/{name}")
-    @ResponseStatus(OK)
-    public List<Certificate> readCertificatesByNamePart(@PathVariable String name) {
-        return certificateService.findCertificatesByNamePart(name);
-    }
-
     @PutMapping("/{id}")
     @ResponseStatus(OK)
-    public Certificate updateCertificate(@RequestBody Certificate certificate, @PathVariable String id) {
-        return certificateService.updateCertificate(certificate, id);
+    public Certificate updateCertificate(@RequestBody Certificate certificate, @PathVariable long id) {
+        certificate.setId(id);
+        return certificateService.updateCertificate(certificate);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(OK)
-    public Certificate patchCertificate(@RequestBody Certificate certificate, @PathVariable String id) {
-        return certificateService.patchCertificate(certificate, id);
+    public Certificate patchCertificate(@RequestBody Certificate certificate, @PathVariable long id) {
+        certificate.setId(id);
+        return certificateService.patchCertificate(certificate);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void deleteCertificate(@PathVariable String id) {
+    public void deleteCertificate(@PathVariable long id) {
         certificateService.removeCertificateById(id);
     }
 }

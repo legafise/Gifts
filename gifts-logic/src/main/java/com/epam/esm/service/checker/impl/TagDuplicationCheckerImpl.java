@@ -6,6 +6,8 @@ import com.epam.esm.service.checker.TagDuplicationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class TagDuplicationCheckerImpl implements TagDuplicationChecker {
     private final TagDao tagDao;
@@ -17,6 +19,8 @@ public class TagDuplicationCheckerImpl implements TagDuplicationChecker {
 
     @Override
     public boolean checkTagForDuplication(Tag tag) {
-        return !tagDao.findByName(tag.getName()).isPresent();
+        Optional<Tag> duplicationTag = tagDao.findByName(tag.getName());
+
+        return !duplicationTag.isPresent() || duplicationTag.get().getId() == tag.getId();
     }
 }

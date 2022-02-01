@@ -9,13 +9,13 @@ public interface TagService {
 
     List<Tag> findAllTags();
 
-    Tag findTagById(String id);
+    Tag findTagById(long id);
 
     Tag findTagByName(String name);
 
-    Tag updateTag(Tag tag, String id);
+    Tag updateTag(Tag tag);
 
-    boolean removeTagById(String id);
+    boolean removeTagById(long id);
 
     void addTagIfNotExists(Tag tag);
 }

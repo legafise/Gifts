@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ComponentScan("com.epam.esm")
 @EnableWebMvc
-public class ApplicationContextConfig extends ApplicationLocaleResolver implements WebMvcConfigurer {
+public class WebContextConfig extends ApplicationLocaleResolver implements WebMvcConfigurer {
 
     @Bean
     public LocaleResolver localeResolver() {

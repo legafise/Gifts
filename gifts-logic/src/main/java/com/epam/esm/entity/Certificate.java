@@ -1,26 +1,29 @@
 package com.epam.esm.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
-import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Certificate implements Entity {
+public class Certificate {
+    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm'Z'";
     private long id;
     private String name;
     private String description;
     private BigDecimal price;
     private short duration;
-    private String createDate;
-    private String lastUpdateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
     private List<Tag> tags;
 
     public Certificate() {
         tags = new ArrayList<>();
     }
 
-    public Certificate(long id, String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate, List<Tag> tags) {
+    public Certificate(long id, String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -31,7 +34,7 @@ public class Certificate implements Entity {
         this.tags = tags;
     }
 
-    public Certificate(String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate, List<Tag> tags) {
+    public Certificate(String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -41,7 +44,7 @@ public class Certificate implements Entity {
         this.tags = tags;
     }
 
-    public Certificate(String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate) {
+    public Certificate(String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -51,7 +54,7 @@ public class Certificate implements Entity {
         tags = new ArrayList<>();
     }
 
-    public Certificate(long id, String name, String description, BigDecimal price, short duration, String createDate, String lastUpdateDate) {
+    public Certificate(long id, String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -102,19 +105,21 @@ public class Certificate implements Entity {
         this.duration = duration;
     }
 
-    public String getCreateDate() {
+    @JsonFormat(pattern = DATE_FORMAT_PATTERN)
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public String getLastUpdateDate() {
+    @JsonFormat(pattern = DATE_FORMAT_PATTERN)
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(String lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

@@ -14,7 +14,9 @@ public interface TagDao {
 
     List<Tag> findAll();
 
-    boolean update(Tag certificate, long id);
+    boolean update(Tag certificate);
 
     boolean remove(long id);
+
+    void removeTagFromCertificates(long id);
 }

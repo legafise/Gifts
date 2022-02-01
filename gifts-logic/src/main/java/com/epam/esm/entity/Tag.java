@@ -2,7 +2,7 @@ package com.epam.esm.entity;
 
 import java.util.Objects;
 
-public class Tag implements Entity {
+public class Tag {
     private long id;
     private String name;
 

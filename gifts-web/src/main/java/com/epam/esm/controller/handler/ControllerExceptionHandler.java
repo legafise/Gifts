@@ -2,6 +2,9 @@ package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.localizer.Localizer;
 import com.epam.esm.service.exception.*;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,19 +52,19 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return getErrorResponse(NUMBER_FORMAT_ERROR_MESSAGE, HttpStatus.BAD_REQUEST, "");
     }
 
-    @ExceptionHandler(InvalidCertificateDateFormatException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidDateFormatException(InvalidCertificateDateFormatException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
-    }
-
     @ExceptionHandler(UnknownCertificateException.class)
     public ResponseEntity<ErrorResponse> handleUnknownCertificateException(UnknownCertificateException e) {
         return getErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND, CERTIFICATE_ERROR_CODE);
     }
 
     @ExceptionHandler(UnknownTagException.class)
-    public ResponseEntity<ErrorResponse> handleUUnknownTagException(UnknownTagException e) {
+    public ResponseEntity<ErrorResponse> handleUnknownTagException(UnknownTagException e) {
         return getErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND, TAG_ERROR_CODE);
+    }
+
+    @ExceptionHandler(InvalidSortParameterException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSortParameterException(InvalidSortParameterException e) {
+        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
     }
 
     private ResponseEntity<ErrorResponse> getErrorResponse(String messageCode, HttpStatus status, String errorCode) {

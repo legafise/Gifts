@@ -33,19 +33,20 @@ public class TagController {
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)
-    public Tag readTag(@PathVariable String id) {
+    public Tag readTag(@PathVariable long id) {
         return tagService.findTagById(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(OK)
-    public Tag updateTag(@RequestBody Tag tag, @PathVariable String id) {
-        return tagService.updateTag(tag, id);
+    public Tag updateTag(@RequestBody Tag tag, @PathVariable long id) {
+        tag.setId(id);
+        return tagService.updateTag(tag);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void deleteTag(@PathVariable String id) {
+    public void deleteTag(@PathVariable long id) {
         tagService.removeTagById(id);
     }
 }

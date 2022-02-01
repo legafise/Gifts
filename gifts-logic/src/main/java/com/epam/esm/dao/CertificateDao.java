@@ -7,19 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CertificateDao {
-    boolean add(Certificate certificate) throws ParseException;
+    boolean add(Certificate certificate);
 
     Optional<Certificate> findById(long id);
 
-    List<Certificate> findByNamePart(String namePart);
-
     List<Certificate> findAll();
 
-    boolean update(Certificate certificate, long id) throws ParseException;
+    boolean update(Certificate certificate);
 
     boolean remove(long id);
-
-    List<Certificate> findByTagName(String tagName);
 
     boolean addTagToCertificate(long certificateId, long tagId);
 

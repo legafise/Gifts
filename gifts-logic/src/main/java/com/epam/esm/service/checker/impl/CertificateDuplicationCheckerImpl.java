@@ -6,8 +6,6 @@ import com.epam.esm.service.checker.CertificateDuplicationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class CertificateDuplicationCheckerImpl implements CertificateDuplicationChecker {
     private final CertificateDao certificateDao;
@@ -21,16 +19,16 @@ public class CertificateDuplicationCheckerImpl implements CertificateDuplication
     public boolean checkCertificateForAddingDuplication(Certificate certificate) {
         return certificateDao.findAll().stream()
                 .noneMatch(currentCertificate -> currentCertificate.getName()
-                        .toUpperCase().equals(certificate.getName()));
+                        .toUpperCase().equals(certificate.getName().toUpperCase()));
     }
 
     @Override
-    public boolean checkCertificateForUpdatingDuplication(Certificate certificate, String certificateId) {
+    public boolean checkCertificateForUpdatingDuplication(Certificate certificate) {
         return certificateDao.findAll().stream()
                 .filter(currentCertificate -> currentCertificate.getName().toUpperCase()
                         .equals(certificate.getName().toUpperCase()))
                 .findFirst()
-                .map(currentCertificate -> currentCertificate.getId() == Long.parseLong(certificateId))
+                .map(currentCertificate -> currentCertificate.getId() == certificate.getId())
                 .orElse(true);
     }
 }

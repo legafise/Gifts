@@ -8,25 +8,22 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.CertificateDuplicationChecker;
 import com.epam.esm.service.collector.CertificateFullDataCollector;
 import com.epam.esm.service.exception.DuplicateCertificateException;
-import com.epam.esm.service.exception.InvalidCertificateDateFormatException;
 import com.epam.esm.service.exception.InvalidCertificateException;
 import com.epam.esm.service.exception.UnknownCertificateException;
+import com.epam.esm.service.handler.CertificatesHandler;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
     private static final String NONEXISTENT_CERTIFICATE_MESSAGE = "nonexistent.certificate";
     private static final String INVALID_CERTIFICATE_MESSAGE = "invalid.certificate";
-    private static final String INVALID_CERTIFICATE_DATE_FORMAT_MESSAGE = "invalid.date.format";
     private static final String DUPLICATE_CERTIFICATE_MESSAGE = "duplicate.certificate";
     private final CertificateDao certificateDao;
     private final TagService tagService;
@@ -46,92 +43,98 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public Certificate addCertificate(Certificate certificate) {
-        try {
-            if (certificateValidator.validateCertificate(certificate)) {
-                if (certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)
-                        && certificateDao.add(certificate)) {
-                    long addedCertificateId = Collections.max(certificateDao.findAll().stream()
-                            .map(Certificate::getId)
-                            .collect(Collectors.toList()));
-                    addCertificateTags(addedCertificateId, certificate.getTags());
-                    return certificateDao.findById(addedCertificateId).get();
-                }
+        certificate.setCreateDate(LocalDateTime.now());
+        certificate.setLastUpdateDate(LocalDateTime.now());
 
-                throw new DuplicateCertificateException(INVALID_CERTIFICATE_MESSAGE);
+        if (!certificateValidator.validateCertificate(certificate)) {
+            throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
+        }
+
+        if (!certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)) {
+            throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
+        }
+
+        certificateDao.add(certificate);
+        long addedCertificateId = Collections.max(certificateDao.findAll().stream()
+                .map(Certificate::getId)
+                .collect(Collectors.toList()));
+        addCertificateTags(addedCertificateId, certificate.getTags());
+        return certificateDao.findById(addedCertificateId).get();
+    }
+
+    @Override
+    public List<Certificate> findAllCertificates(Map<String, String> handleParameters) {
+        List<Certificate> certificates = certificateDao.findAll();
+
+        if (handleParameters != null && !handleParameters.isEmpty()) {
+            for (Map.Entry<String, String> parametersEntry : handleParameters.entrySet()) {
+                certificates = CertificatesHandler
+                        .findHandlerByName(parametersEntry.getKey())
+                        .handle(certificates, parametersEntry.getValue());
             }
-        } catch (ParseException e) {
-            throw new InvalidCertificateDateFormatException(INVALID_CERTIFICATE_DATE_FORMAT_MESSAGE);
         }
 
-        throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
+        return certificates;
     }
 
     @Override
-    public List<Certificate> findAllCertificates() {
-        return certificateDao.findAll();
-    }
-
-    @Override
-    public Certificate findCertificateById(String id) {
-        Optional<Certificate> certificate = certificateDao.findById(Long.parseLong(id));
-        if (certificate.isPresent()) {
-            return certificate.get();
+    public Certificate findCertificateById(long id) {
+        Optional<Certificate> certificate = certificateDao.findById(id);
+        if (!certificate.isPresent()) {
+            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
-        throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
-    }
-
-    @Override
-    public List<Certificate> findCertificatesByTagName(String tagName) {
-        return certificateDao.findByTagName(tagName);
-    }
-
-    @Override
-    public List<Certificate> findCertificatesByNamePart(String name) {
-        return certificateDao.findByNamePart(name);
+        return certificate.get();
     }
 
     @Override
     @Transactional
-    public Certificate updateCertificate(Certificate certificate, String id) {
-        try {
-            if (certificateValidator.validateCertificate(certificate)) {
-                if (certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate, id)
-                        && certificateDao.update(certificate, Long.parseLong(id))) {
-                    updateCertificateTags(certificate, id);
-                    return findCertificateById(id);
-                }
+    public Certificate updateCertificate(Certificate certificate) {
+        certificate.setLastUpdateDate(LocalDateTime.now());
 
-                throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
-            }
-        } catch (ParseException e) {
-            throw new InvalidCertificateDateFormatException(INVALID_CERTIFICATE_DATE_FORMAT_MESSAGE);
+        if (!certificateValidator.validateCertificate(certificate)) {
+            throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
         }
 
-        throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
+        if (!certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate)) {
+            throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
+        }
+
+        certificateDao.update(certificate);
+        updateCertificateTags(certificate);
+        return findCertificateById(certificate.getId());
     }
 
     @Override
     @Transactional
-    public boolean removeCertificateById(String id) {
-        certificateDao.clearCertificateTags(Long.parseLong(id));
-        if (certificateDao.remove(Long.parseLong(id))) {
-            return true;
+    public boolean removeCertificateById(long id) {
+        certificateDao.clearCertificateTags(id);
+        if (!certificateDao.remove(id)) {
+            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
-        throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
+        return true;
     }
 
     @Override
     @Transactional
-    public Certificate patchCertificate(Certificate certificate, String id) {
-        Optional<Certificate> actualCertificate = certificateDao.findById(Long.parseLong(id));
-        if (actualCertificate.isPresent()) {
-            return updateCertificate(certificateFullDataCollector
-                    .collectFullCertificateData(certificate, actualCertificate.get()), id);
+    public Certificate patchCertificate(Certificate certificate) {
+        Optional<Certificate> actualCertificate = certificateDao.findById(certificate.getId());
+        if (!actualCertificate.isPresent()) {
+            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
+        }
+        return updateCertificate(certificateFullDataCollector
+                .collectFullCertificateData(certificate, actualCertificate.get()));
+    }
+
+    private boolean isExistentConnectionBetweenCertificateAndTag(long certificateId, long tagId) {
+        Optional<Certificate> certificate = certificateDao.findById(certificateId);
+        if (!certificate.isPresent()) {
+            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
-        throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
+        return certificate.get().getTags().stream()
+                .noneMatch(tag -> tag.getId() == tagId);
     }
 
     private void addCertificateTags(long certificateId, List<Tag> tags) {
@@ -139,15 +142,17 @@ public class CertificateServiceImpl implements CertificateService {
             tags.forEach(tag -> {
                 tagService.addTagIfNotExists(tag);
                 Tag currentTag = tagService.findTagByName(tag.getName());
-                certificateDao.addTagToCertificate(certificateId, currentTag.getId());
+                if (isExistentConnectionBetweenCertificateAndTag(certificateId, currentTag.getId())) {
+                    certificateDao.addTagToCertificate(certificateId, currentTag.getId());
+                }
             });
         }
     }
 
-    private void updateCertificateTags(Certificate certificate, String certificateId) {
-        if (certificate.getTags().size() >= 1) {
-            certificateDao.clearCertificateTags(Long.parseLong(certificateId));
-            addCertificateTags(Long.parseLong(certificateId), certificate.getTags());
+    private void updateCertificateTags(Certificate certificate) {
+        if (!certificate.getTags().isEmpty()) {
+            certificateDao.clearCertificateTags(certificate.getId());
+            addCertificateTags(certificate.getId(), certificate.getTags());
         }
     }
 }

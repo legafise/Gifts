@@ -137,7 +137,7 @@ public class CertificateServiceImpl implements CertificateService {
                 .noneMatch(tag -> tag.getId() == tagId);
     }
 
-    private void addCertificateTags(long certificateId, List<Tag> tags) {
+    public void addCertificateTags(long certificateId, List<Tag> tags) {
         if (!tags.isEmpty()) {
             tags.forEach(tag -> {
                 tagService.addTagIfNotExists(tag);

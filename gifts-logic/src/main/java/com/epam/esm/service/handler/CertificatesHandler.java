@@ -19,7 +19,7 @@ public enum CertificatesHandler {
                     .collect(Collectors.toList());
         }
     },
-    FIND_NAME_PART("namePart") {
+    FIND_BY_NAME_PART("namePart") {
         @Override
         public List<Certificate> handle(List<Certificate> certificateList, String parameter) {
             return certificateList.stream()
@@ -28,7 +28,7 @@ public enum CertificatesHandler {
                     .collect(Collectors.toList());
         }
     },
-    FIND_DESCRIPTION_PART("descriptionPart") {
+    FIND_BY_DESCRIPTION_PART("descriptionPart") {
         @Override
         public List<Certificate> handle(List<Certificate> certificateList, String parameter) {
             return certificateList.stream()

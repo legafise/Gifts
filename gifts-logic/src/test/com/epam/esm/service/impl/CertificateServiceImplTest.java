@@ -58,7 +58,7 @@ class CertificateServiceImplTest {
 
     @Test
     void addCertificatePositiveTest() {
-        when(certificateValidator.validateCertificate(firstTestCertificate)).thenReturn(true);
+        doNothing().when(certificateValidator).validateCertificate(firstTestCertificate);
         when(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate)).thenReturn(true);
         when(certificateDao.add(firstTestCertificate)).thenReturn(true);
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
@@ -71,7 +71,7 @@ class CertificateServiceImplTest {
 
     @Test
     void addInvalidCertificateTest() {
-        when(certificateValidator.validateCertificate(firstTestCertificate)).thenReturn(false);
+        doNothing().when(certificateValidator).validateCertificate(firstTestCertificate);
         when(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate)).thenReturn(true);
         when(certificateDao.add(firstTestCertificate)).thenReturn(true);
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
@@ -84,7 +84,7 @@ class CertificateServiceImplTest {
 
     @Test
     void addDuplicateCertificateTest() {
-        when(certificateValidator.validateCertificate(firstTestCertificate)).thenReturn(true);
+        doNothing().when(certificateValidator).validateCertificate(firstTestCertificate);
         when(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate)).thenReturn(false);
         when(certificateDao.add(firstTestCertificate)).thenReturn(true);
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
@@ -131,7 +131,7 @@ class CertificateServiceImplTest {
 
     @Test
     void updateCertificatePositiveTest() {
-        when(certificateValidator.validateCertificate(firstTestCertificate)).thenReturn(true);
+        doNothing().when(certificateValidator).validateCertificate(firstTestCertificate);
         when(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate)).thenReturn(true);
         when(certificateDao.update(firstTestCertificate)).thenReturn(true);
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
@@ -143,7 +143,7 @@ class CertificateServiceImplTest {
 
     @Test
     void updateInvalidCertificateTest() {
-        when(certificateValidator.validateCertificate(firstTestCertificate)).thenReturn(false);
+        doNothing().when(certificateValidator).validateCertificate(firstTestCertificate);
         when(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate)).thenReturn(true);
         when(certificateDao.update(firstTestCertificate)).thenReturn(true);
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
@@ -155,7 +155,7 @@ class CertificateServiceImplTest {
 
     @Test
     void updateDuplicateCertificateTest() {
-        when(certificateValidator.validateCertificate(firstTestCertificate)).thenReturn(true);
+        doNothing().when(certificateValidator).validateCertificate(firstTestCertificate);
         when(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate)).thenReturn(false);
         when(certificateDao.update(firstTestCertificate)).thenReturn(true);
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));

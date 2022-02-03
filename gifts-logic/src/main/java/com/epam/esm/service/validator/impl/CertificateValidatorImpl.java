@@ -1,10 +1,15 @@
 package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.InvalidCertificateException;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CertificateValidatorImpl implements CertificateValidator {
@@ -12,30 +17,86 @@ public class CertificateValidatorImpl implements CertificateValidator {
     private static final BigDecimal MAX_PRICE = new BigDecimal("100000");
     private static final long MIN_DURATION = 7;
     private static final long MAX_DURATION = 365;
+    private List<String> invalidValues;
+
+    public CertificateValidatorImpl() {
+        invalidValues = new ArrayList<>();
+    }
 
     @Override
-    public boolean validateCertificate(Certificate certificate) {
-        return certificate != null && validateName(certificate.getName())
-                && validateDescription(certificate.getDescription()) && validatePrice(certificate.getPrice())
-                && validateDuration(certificate.getDuration()) && certificate.getCreateDate() != null
-                && certificate.getLastUpdateDate() != null && certificate.getTags() != null;
+    public void validateCertificate(Certificate certificate) {
+        if (certificate == null) {
+            throw new InvalidCertificateException("certificate is null");
+        }
+
+        validateName(certificate.getName());
+        validateDescription(certificate.getDescription());
+        validatePrice(certificate.getPrice());
+        validateDuration(certificate.getDuration());
+        validateCreateDate(certificate.getCreateDate());
+        validateLastUpdateDate(certificate.getLastUpdateDate());
+        validateTags(certificate.getTags());
+
+        if (!invalidValues.isEmpty()) {
+            throw new InvalidCertificateException(collectCause(invalidValues));
+        }
     }
 
-    private boolean validateDuration(short duration) {
-        return duration > MIN_DURATION && duration <= MAX_DURATION;
+    private String collectCause(List<String> invalidParams) {
+        StringBuilder cause = new StringBuilder();
+        for (int i = 0; i < invalidParams.size(); i++) {
+            if (i < invalidParams.size() - 1) {
+                cause.append(invalidParams.get(i)).append(", ");
+            } else {
+                cause.append(invalidParams.get(i));
+            }
+        }
+
+        invalidValues = new ArrayList<>();
+        return cause.toString();
     }
 
-    private boolean validateName(String certificateName) {
-        return certificateName != null && !certificateName.isEmpty() && certificateName.length() > 1
-                && certificateName.length() <= 100;
+    private void validateTags(List<Tag> tags) {
+        if (tags == null) {
+            invalidValues.add("tags is null");
+        }
     }
 
-    private boolean validateDescription(String certificateDescription) {
-        return certificateDescription != null && !certificateDescription.isEmpty()
-                && certificateDescription.length() >= 20 && certificateDescription.length() <= 500;
+    private void validateCreateDate(LocalDateTime createDate) {
+        if (createDate == null) {
+            invalidValues.add("create date");
+        }
     }
 
-    private boolean validatePrice(BigDecimal price) {
-        return price != null && price.compareTo(MAX_PRICE) < 1 && price.compareTo(MIN_PRICE) > -1;
+    private void validateLastUpdateDate(LocalDateTime createDate) {
+        if (createDate == null) {
+            invalidValues.add("last update date");
+        }
+    }
+
+    private void validateDuration(short duration) {
+        if (!(duration > MIN_DURATION && duration <= MAX_DURATION)) {
+            invalidValues.add("duration");
+        }
+    }
+
+    private void validateName(String certificateName) {
+        if (!(certificateName != null && !certificateName.isEmpty() && certificateName.length() > 1
+                && certificateName.length() <= 100)) {
+            invalidValues.add("name");
+        }
+    }
+
+    private void validateDescription(String certificateDescription) {
+        if (!(certificateDescription != null && !certificateDescription.isEmpty()
+                && certificateDescription.length() >= 15 && certificateDescription.length() <= 500)) {
+            invalidValues.add("description");
+        }
+    }
+
+    private void validatePrice(BigDecimal price) {
+        if (!(price != null && price.compareTo(MAX_PRICE) < 1 && price.compareTo(MIN_PRICE) > -1)) {
+            invalidValues.add("price");
+        }
     }
 }

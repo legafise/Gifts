@@ -2,10 +2,12 @@ package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.InvalidCertificateException;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -31,66 +33,66 @@ class CertificateValidatorImplTest {
 
     @Test
     void validateCertificatePositiveTest() {
-        Assert.assertTrue(certificateValidator.validateCertificate(testCertificate));
+        certificateValidator.validateCertificate(testCertificate);
     }
 
     @Test
     void validateCertificateWithInvalidNameTest() {
         testCertificate.setName("d");
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithNullNameTest() {
         testCertificate.setName(null);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithInvalidDescriptionTest() {
         testCertificate.setDescription("test");
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithNullDescriptionTest() {
         testCertificate.setDescription(null);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithInvalidPriceTest() {
         testCertificate.setPrice(new BigDecimal("0"));
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithNullPriceTest() {
         testCertificate.setPrice(null);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithInvalidDurationTest() {
         testCertificate.setDuration((short) 1);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithInvalidCreateDateTest() {
         testCertificate.setCreateDate(null);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithInvalidLastUpdateDateTest() {
         testCertificate.setLastUpdateDate(null);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 
     @Test
     void validateCertificateWithInvalidTagsTest() {
         testCertificate.setTags(null);
-        Assert.assertFalse(certificateValidator.validateCertificate(testCertificate));
+        Assert.assertThrows(InvalidCertificateException.class, () -> certificateValidator.validateCertificate(testCertificate));
     }
 }

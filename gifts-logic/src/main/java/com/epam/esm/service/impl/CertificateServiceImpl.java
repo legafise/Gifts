@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 public class CertificateServiceImpl implements CertificateService {
     private static final String NONEXISTENT_CERTIFICATE_MESSAGE = "nonexistent.certificate";
-    private static final String INVALID_CERTIFICATE_MESSAGE = "invalid.certificate";
     private static final String DUPLICATE_CERTIFICATE_MESSAGE = "duplicate.certificate";
     private final CertificateDao certificateDao;
     private final TagService tagService;
@@ -46,10 +45,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(LocalDateTime.now());
 
-        if (!certificateValidator.validateCertificate(certificate)) {
-            throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
-        }
-
+        certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)) {
             throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
         }
@@ -92,10 +88,7 @@ public class CertificateServiceImpl implements CertificateService {
     public Certificate updateCertificate(Certificate certificate) {
         certificate.setLastUpdateDate(LocalDateTime.now());
 
-        if (!certificateValidator.validateCertificate(certificate)) {
-            throw new InvalidCertificateException(INVALID_CERTIFICATE_MESSAGE);
-        }
-
+        certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate)) {
             throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
         }

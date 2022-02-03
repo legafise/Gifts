@@ -29,7 +29,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidCertificateException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCertificateException(InvalidCertificateException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
+        String errorMessage = String.format(localizer.toLocale("invalid.certificate"), e.getMessage());
+        return getErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
     }
 
     @ExceptionHandler(InvalidTagException.class)

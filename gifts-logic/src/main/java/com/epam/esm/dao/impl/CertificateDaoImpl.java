@@ -23,12 +23,12 @@ public class CertificateDaoImpl implements CertificateDao {
     private static final String FIND_CERTIFICATE_BY_ID_SQL = "SELECT gift_certificate.id AS certificate_id," +
             " gift_certificate.name AS gift_certificate_name, gift_certificate.description, gift_certificate.price," +
             " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
-            " tag_id, tag.name AS tag_name FROM gifts.gift_certificate LEFT JOIN gift_tags" +
+            " tag_id, tag.name AS tag_name FROM gift_certificate LEFT JOIN gift_tags" +
             " ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON gift_tags.tag_id = tag.id WHERE gift_certificate.id = ?";
     private static final String FIND_ALL_CERTIFICATES_SQL = "SELECT gift_certificate.id AS certificate_id," +
             " gift_certificate.name AS gift_certificate_name, gift_certificate.description, gift_certificate.price," +
             " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
-            " tag_id, tag.name AS tag_name FROM gifts.gift_certificate LEFT JOIN gift_tags" +
+            " tag_id, tag.name AS tag_name FROM gift_certificate LEFT JOIN gift_tags" +
             " ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON gift_tags.tag_id = tag.id ORDER BY gift_certificate.id";
     private final CertificateExtractorImpl certificateExtractor;
     private final JdbcTemplate jdbcTemplate;

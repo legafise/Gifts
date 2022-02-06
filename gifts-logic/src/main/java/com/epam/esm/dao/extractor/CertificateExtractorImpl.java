@@ -8,17 +8,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 @Component
 public class CertificateExtractorImpl implements ResultSetExtractor<List<Certificate>> {
@@ -47,8 +42,8 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
             certificate.setDescription(resultSet.getString(DESCRIPTION));
             certificate.setPrice(resultSet.getBigDecimal(PRICE));
             certificate.setDuration(resultSet.getShort(DURATION));
-            certificate.setCreateDate(convertDateTimeToLocalDateTime(resultSet.getDate(CREATE_DATE)));
-            certificate.setLastUpdateDate(convertDateTimeToLocalDateTime(resultSet.getDate(LAST_UPDATE_DATE)));
+            certificate.setCreateDate(resultSet.getTimestamp(CREATE_DATE).toLocalDateTime());
+            certificate.setLastUpdateDate(resultSet.getTimestamp(LAST_UPDATE_DATE).toLocalDateTime());
             certificate.setTags(mapCertificateTags(resultSet));
 
             certificateList.add(certificate);
@@ -78,11 +73,5 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
 
     private List<Tag> tagListChecker(List<Tag> tagList) {
         return tagList.size() == 1 && tagList.get(0).getName() == null ? new ArrayList<>() : tagList;
-    }
-
-    private LocalDateTime convertDateTimeToLocalDateTime(Date date) {
-        return Instant.ofEpochMilli(date.getTime())
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
     }
 }

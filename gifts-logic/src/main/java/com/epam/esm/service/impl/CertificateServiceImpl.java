@@ -8,7 +8,6 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.CertificateDuplicationChecker;
 import com.epam.esm.service.collector.CertificateFullDataCollector;
 import com.epam.esm.service.exception.DuplicateCertificateException;
-import com.epam.esm.service.exception.InvalidCertificateException;
 import com.epam.esm.service.exception.UnknownCertificateException;
 import com.epam.esm.service.handler.CertificatesHandler;
 import com.epam.esm.service.validator.CertificateValidator;
@@ -17,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,7 +88,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public Certificate updateCertificate(Certificate certificate) {
+        Optional<Certificate> actualCertificate = certificateDao.findById(certificate.getId());
+        if (!actualCertificate.isPresent()) {
+            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
+        }
+
         certificate.setLastUpdateDate(LocalDateTime.now());
+        certificate.setCreateDate(actualCertificate.get().getCreateDate());
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate)) {

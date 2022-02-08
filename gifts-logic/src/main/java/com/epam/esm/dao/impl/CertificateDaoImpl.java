@@ -25,6 +25,11 @@ public class CertificateDaoImpl implements CertificateDao {
             " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
             " tag_id, tag.name AS tag_name FROM gift_certificate LEFT JOIN gift_tags" +
             " ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON gift_tags.tag_id = tag.id WHERE gift_certificate.id = ?";
+    private static final String FIND_CERTIFICATE_BY_NAME_SQL = "SELECT gift_certificate.id AS certificate_id," +
+            " gift_certificate.name AS gift_certificate_name, gift_certificate.description, gift_certificate.price," +
+            " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
+            " tag_id, tag.name AS tag_name FROM gift_certificate LEFT JOIN gift_tags" +
+            " ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON gift_tags.tag_id = tag.id WHERE gift_certificate.name = ?";
     private static final String FIND_ALL_CERTIFICATES_SQL = "SELECT gift_certificate.id AS certificate_id," +
             " gift_certificate.name AS gift_certificate_name, gift_certificate.description, gift_certificate.price," +
             " gift_certificate.duration, gift_certificate.create_date, gift_certificate.last_update_date, tag.id AS" +
@@ -79,5 +84,13 @@ public class CertificateDaoImpl implements CertificateDao {
     @Override
     public boolean clearCertificateTags(long certificateId) {
         return 1 == jdbcTemplate.update(CLEAR_CERTIFICATE_TAGS_SQL, certificateId);
+    }
+
+    @Override
+    public Optional<Certificate> findByName(String name) {
+        List<Certificate> certificateList = jdbcTemplate.query(FIND_CERTIFICATE_BY_NAME_SQL, certificateExtractor, name);
+
+        return certificateList == null || certificateList.isEmpty() ? Optional.empty()
+                : Optional.of(certificateList.get(0));
     }
 }

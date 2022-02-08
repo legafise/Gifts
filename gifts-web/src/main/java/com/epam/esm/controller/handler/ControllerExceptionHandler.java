@@ -2,9 +2,6 @@ package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.localizer.Localizer;
 import com.epam.esm.service.exception.*;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

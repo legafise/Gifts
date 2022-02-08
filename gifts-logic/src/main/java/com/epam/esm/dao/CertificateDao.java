@@ -2,7 +2,6 @@ package com.epam.esm.dao;
 
 import com.epam.esm.entity.Certificate;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +19,6 @@ public interface CertificateDao {
     boolean addTagToCertificate(long certificateId, long tagId);
 
     boolean clearCertificateTags(long certificateId);
+
+    Optional<Certificate> findByName(String name);
 }

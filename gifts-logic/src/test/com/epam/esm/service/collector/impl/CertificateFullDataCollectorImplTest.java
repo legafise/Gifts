@@ -2,17 +2,14 @@ package com.epam.esm.service.collector.impl;
 
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.service.checker.impl.CertificateDuplicationCheckerImpl;
 import com.epam.esm.service.collector.CertificateFullDataCollector;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CertificateFullDataCollectorImplTest {
     private CertificateFullDataCollector certificateFullDataCollector;
@@ -37,7 +34,7 @@ class CertificateFullDataCollectorImplTest {
                 firstTestCertificate.getPrice(), firstTestCertificate.getDuration(), firstTestCertificate.getCreateDate(),
                 firstTestCertificate.getLastUpdateDate(), firstTestCertificate.getTags());
 
-        Assert.assertEquals(certificateFullDataCollector
+        Assertions.assertEquals(certificateFullDataCollector
                 .collectFullCertificateData(testCertificate, firstTestCertificate), result);
     }
 }

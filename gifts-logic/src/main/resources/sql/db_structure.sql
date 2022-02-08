@@ -10,7 +10,7 @@ CREATE TABLE tag
 CREATE TABLE gift_certificate
 (
     id               bigint         NOT NULL AUTO_INCREMENT,
-    name             varchar(100)   NOT NULL,
+    name             varchar(100)   NOT NULL UNIQUE,
     description      varchar(500)   NOT NULL,
     price            decimal(10, 2) NOT NULL,
     duration         smallint       NOT NULL,

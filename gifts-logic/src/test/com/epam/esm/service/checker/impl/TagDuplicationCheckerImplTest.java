@@ -2,7 +2,7 @@ package com.epam.esm.service.checker.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,18 +28,18 @@ class TagDuplicationCheckerImplTest {
     @Test
     void checkTagForDuplicationWithNewTest() {
         when(tagDao.findByName(firstTestTag.getName())).thenReturn(Optional.empty());
-        Assert.assertTrue(tagDuplicationChecker.checkTagForDuplication(firstTestTag));
+        Assertions.assertTrue(tagDuplicationChecker.checkTagForDuplication(firstTestTag));
     }
 
     @Test
     void checkTagForDuplicationWhileUpdateTest() {
         when(tagDao.findByName(firstTestTag.getName())).thenReturn(Optional.of(firstTestTag));
-        Assert.assertTrue(tagDuplicationChecker.checkTagForDuplication(firstTestTag));
+        Assertions.assertTrue(tagDuplicationChecker.checkTagForDuplication(firstTestTag));
     }
 
     @Test
     void checkTagForDuplicationBadTest() {
         when(tagDao.findByName(firstTestTag.getName())).thenReturn(Optional.of(secondTestTag));
-        Assert.assertFalse(tagDuplicationChecker.checkTagForDuplication(firstTestTag));
+        Assertions.assertFalse(tagDuplicationChecker.checkTagForDuplication(firstTestTag));
     }
 }

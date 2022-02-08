@@ -4,6 +4,7 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,33 +40,31 @@ class CertificateDuplicationCheckerImplTest {
 
     @Test
     void checkCertificateForAddingDuplicationPositiveTest() {
-        when(certificateDao.findAll()).thenReturn(Collections.singletonList(secondTestCertificate));
-        Assert.assertTrue(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate));
+        when(certificateDao.findByName("Jump park")).thenReturn(Optional.empty());
+        Assertions.assertTrue(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate));
     }
 
     @Test
     void checkCertificateForAddingDuplicationBadTest() {
-        when(certificateDao.findAll()).thenReturn(Arrays.asList(secondTestCertificate, firstTestCertificate));
-        Assert.assertFalse(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate));
+        when(certificateDao.findByName("Jump park")).thenReturn(Optional.of(firstTestCertificate));
+        Assertions.assertFalse(certificateDuplicationChecker.checkCertificateForAddingDuplication(firstTestCertificate));
     }
 
     @Test
     void checkCertificateForUpdatingDuplicationPositiveTest() {
-        when(certificateDao.findAll()).thenReturn(Collections.singletonList(secondTestCertificate));
-        Assert.assertTrue(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate));
+        when(certificateDao.findByName("Jump park")).thenReturn(Optional.empty());
+        Assertions.assertTrue(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate));
     }
 
     @Test
     void checkCertificateForUpdatingDuplicationWithUpdatedCertificateTest() {
-        when(certificateDao.findAll()).thenReturn(Arrays.asList(secondTestCertificate, firstTestCertificate));
-        firstTestCertificate.setName("Jump area");
-        Assert.assertTrue(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate));
+        when(certificateDao.findByName("Jump park")).thenReturn(Optional.of(firstTestCertificate));
+        Assertions.assertTrue(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate));
     }
 
     @Test
     void checkCertificateForUpdatingDuplicationBadTest() {
-        secondTestCertificate.setName("Jump park");
-        when(certificateDao.findAll()).thenReturn(Collections.singletonList(secondTestCertificate));
-        Assert.assertFalse(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate));
+        when(certificateDao.findByName("Jump park")).thenReturn(Optional.of(secondTestCertificate));
+        Assertions.assertFalse(certificateDuplicationChecker.checkCertificateForUpdatingDuplication(firstTestCertificate));
     }
 }

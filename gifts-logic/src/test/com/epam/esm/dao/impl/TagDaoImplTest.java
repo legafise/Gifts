@@ -2,7 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.TestSpringConfig;
 import com.epam.esm.entity.Tag;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestSpringConfig.class})
-public class TagDaoImplTest {
+class TagDaoImplTest {
     @Autowired
     private TagDaoImpl tagDao;
     private Tag firstTestTag;
@@ -33,47 +33,47 @@ public class TagDaoImplTest {
 
     @Test
     void findAllTagsTest() {
-        Assert.assertEquals(tagList, tagDao.findAll());
+        Assertions.assertEquals(tagList, tagDao.findAll());
     }
 
     @Test
     void addTagTest() {
-        Assert.assertTrue(tagDao.add(firstTestTag));
+        Assertions.assertTrue(tagDao.add(firstTestTag));
     }
 
     @Test
     void findByIdTest() {
-        Assert.assertEquals(tagDao.findById(103).get(), thirdTestTag);
+        Assertions.assertEquals(tagDao.findById(103).get(), thirdTestTag);
     }
 
     @Test
     void findByIdWithInvalidIdTest() {
-        Assert.assertFalse(tagDao.findById(300).isPresent());
+        Assertions.assertFalse(tagDao.findById(300).isPresent());
     }
 
     @Test
     void findByNameTest() {
-        Assert.assertEquals(tagDao.findByName("Tattoo").get(), secondTestTag);
+        Assertions.assertEquals(tagDao.findByName("Tattoo").get(), secondTestTag);
     }
 
     @Test
     void findByIdWithInvalidNameTest() {
-        Assert.assertFalse(tagDao.findByName("Banana").isPresent());
+        Assertions.assertFalse(tagDao.findByName("Banana").isPresent());
     }
 
     @Test
     void updateTagTest() {
         secondTestTag.setName("TattooLand");
-        Assert.assertTrue(tagDao.update(secondTestTag));
+        Assertions.assertTrue(tagDao.update(secondTestTag));
     }
 
     @Test
     void removeTagPositiveTest() {
-        Assert.assertTrue(tagDao.remove(1));
+        Assertions.assertTrue(tagDao.remove(1));
     }
 
     @Test
     void removeUnknownTagTest() {
-        Assert.assertFalse(tagDao.remove(400));
+        Assertions.assertFalse(tagDao.remove(400));
     }
 }

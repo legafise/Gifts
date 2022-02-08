@@ -3,7 +3,7 @@ package com.epam.esm.service.handler;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.InvalidSortParameterException;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,76 +38,76 @@ class CertificatesHandlerTest {
 
     @Test
     void findByTagNameTest() {
-        Assert.assertEquals(Collections.singletonList(secondTestCertificate), CertificatesHandler.FIND_BY_TAG_NAME.handle(certificates, "Fly"));
+        Assertions.assertEquals(Collections.singletonList(secondTestCertificate), CertificatesHandler.FIND_BY_TAG_NAME.handle(certificates, "Fly"));
     }
 
     @Test
     void findByUnknownTagNameTest() {
-        Assert.assertEquals(new ArrayList<>(), CertificatesHandler.FIND_BY_TAG_NAME.handle(certificates, "Test"));
+        Assertions.assertEquals(new ArrayList<>(), CertificatesHandler.FIND_BY_TAG_NAME.handle(certificates, "Test"));
     }
 
     @Test
     void findByNamePartTest() {
-        Assert.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate), CertificatesHandler.FIND_BY_NAME_PART.handle(certificates, "park"));
+        Assertions.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate), CertificatesHandler.FIND_BY_NAME_PART.handle(certificates, "park"));
     }
 
     @Test
     void findByUnknownNamePartTest() {
-        Assert.assertEquals(new ArrayList<>(), CertificatesHandler.FIND_BY_NAME_PART.handle(certificates, "test"));
+        Assertions.assertEquals(new ArrayList<>(), CertificatesHandler.FIND_BY_NAME_PART.handle(certificates, "test"));
     }
 
     @Test
     void findByDescriptionPartTest() {
-        Assert.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate), CertificatesHandler.FIND_BY_DESCRIPTION_PART.handle(certificates, "free"));
+        Assertions.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate), CertificatesHandler.FIND_BY_DESCRIPTION_PART.handle(certificates, "free"));
     }
 
     @Test
     void findByUnknownDescriptionPartTest() {
-        Assert.assertEquals(new ArrayList<>(), CertificatesHandler.FIND_BY_DESCRIPTION_PART.handle(certificates, "test"));
+        Assertions.assertEquals(new ArrayList<>(), CertificatesHandler.FIND_BY_DESCRIPTION_PART.handle(certificates, "test"));
     }
 
     @Test
     void sortByNameAscTest() {
-        Assert.assertEquals(Arrays.asList(thirdTestCertificate, secondTestCertificate, firstTestCertificate), CertificatesHandler.SORT_BY_NAME.handle(certificates, "asc"));
+        Assertions.assertEquals(Arrays.asList(thirdTestCertificate, secondTestCertificate, firstTestCertificate), CertificatesHandler.SORT_BY_NAME.handle(certificates, "asc"));
     }
 
     @Test
     void sortByNameDescTest() {
-        Assert.assertEquals(Arrays.asList(firstTestCertificate, secondTestCertificate, thirdTestCertificate), CertificatesHandler.SORT_BY_NAME.handle(certificates, "desc"));
+        Assertions.assertEquals(Arrays.asList(firstTestCertificate, secondTestCertificate, thirdTestCertificate), CertificatesHandler.SORT_BY_NAME.handle(certificates, "desc"));
     }
 
     @Test
     void sortByNameWithInvalidParameterTest() {
-        Assert.assertThrows(InvalidSortParameterException.class,() -> CertificatesHandler.SORT_BY_NAME.handle(certificates, "apple"));
+        Assertions.assertThrows(InvalidSortParameterException.class,() -> CertificatesHandler.SORT_BY_NAME.handle(certificates, "apple"));
     }
 
     @Test
     void sortByCreateDateAscTest() {
-        Assert.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate, secondTestCertificate), CertificatesHandler.SORT_BY_CREATE_DATE.handle(certificates, "asc"));
+        Assertions.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate, secondTestCertificate), CertificatesHandler.SORT_BY_CREATE_DATE.handle(certificates, "asc"));
     }
 
     @Test
     void sortByCreateDateDescTest() {
-        Assert.assertEquals(Arrays.asList(secondTestCertificate, thirdTestCertificate, firstTestCertificate), CertificatesHandler.SORT_BY_CREATE_DATE.handle(certificates, "desc"));
+        Assertions.assertEquals(Arrays.asList(secondTestCertificate, thirdTestCertificate, firstTestCertificate), CertificatesHandler.SORT_BY_CREATE_DATE.handle(certificates, "desc"));
     }
 
     @Test
     void sortByCreateDateWithInvalidParameterTest() {
-        Assert.assertThrows(InvalidSortParameterException.class,() -> CertificatesHandler.SORT_BY_CREATE_DATE.handle(certificates, "carrot"));
+        Assertions.assertThrows(InvalidSortParameterException.class,() -> CertificatesHandler.SORT_BY_CREATE_DATE.handle(certificates, "carrot"));
     }
 
     @Test
     void sortByLastUpdateDateAscTest() {
-        Assert.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate, secondTestCertificate), CertificatesHandler.SORT_BY_LAST_UPDATE_DATE.handle(certificates, "asc"));
+        Assertions.assertEquals(Arrays.asList(firstTestCertificate, thirdTestCertificate, secondTestCertificate), CertificatesHandler.SORT_BY_LAST_UPDATE_DATE.handle(certificates, "asc"));
     }
 
     @Test
     void sortByLastUpdateDateDescTest() {
-        Assert.assertEquals(Arrays.asList(secondTestCertificate, thirdTestCertificate, firstTestCertificate), CertificatesHandler.SORT_BY_LAST_UPDATE_DATE.handle(certificates, "desc"));
+        Assertions.assertEquals(Arrays.asList(secondTestCertificate, thirdTestCertificate, firstTestCertificate), CertificatesHandler.SORT_BY_LAST_UPDATE_DATE.handle(certificates, "desc"));
     }
 
     @Test
     void sortByLastUpdateDateWithInvalidParameterTest() {
-        Assert.assertThrows(InvalidSortParameterException.class,() -> CertificatesHandler.SORT_BY_LAST_UPDATE_DATE.handle(certificates, "pear"));
+        Assertions.assertThrows(InvalidSortParameterException.class,() -> CertificatesHandler.SORT_BY_LAST_UPDATE_DATE.handle(certificates, "pear"));
     }
 }

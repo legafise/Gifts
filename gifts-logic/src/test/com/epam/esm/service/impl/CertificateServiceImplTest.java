@@ -10,7 +10,7 @@ import com.epam.esm.service.exception.DuplicateCertificateException;
 import com.epam.esm.service.exception.InvalidCertificateException;
 import com.epam.esm.service.exception.UnknownCertificateException;
 import com.epam.esm.service.validator.CertificateValidator;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -66,7 +66,7 @@ class CertificateServiceImplTest {
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doNothing().when(spyCertificateService).addCertificateTags(isA(Long.class), isA(List.class));
 
-        Assert.assertEquals(spyCertificateService.addCertificate(firstTestCertificate), firstTestCertificate);
+        Assertions.assertEquals(spyCertificateService.addCertificate(firstTestCertificate), firstTestCertificate);
     }
 
     @Test
@@ -79,7 +79,7 @@ class CertificateServiceImplTest {
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doNothing().when(spyCertificateService).addCertificateTags(isA(Long.class), isA(List.class));
 
-        Assert.assertThrows(InvalidCertificateException.class, () -> spyCertificateService.addCertificate(firstTestCertificate));
+        Assertions.assertThrows(InvalidCertificateException.class, () -> spyCertificateService.addCertificate(firstTestCertificate));
     }
 
     @Test
@@ -92,25 +92,25 @@ class CertificateServiceImplTest {
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doNothing().when(spyCertificateService).addCertificateTags(isA(Long.class), isA(List.class));
 
-        Assert.assertThrows(DuplicateCertificateException.class, () -> spyCertificateService.addCertificate(firstTestCertificate));
+        Assertions.assertThrows(DuplicateCertificateException.class, () -> spyCertificateService.addCertificate(firstTestCertificate));
     }
 
     @Test
     void findAllCertificatesWithoutParametersTest() {
         when(certificateDao.findAll()).thenReturn(certificates);
-        Assert.assertEquals(certificateService.findAllCertificates(new HashMap<>()), certificates);
+        Assertions.assertEquals(certificateService.findAllCertificates(new HashMap<>()), certificates);
     }
 
     @Test
     void findCertificateByIdPositiveTest() {
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
-        Assert.assertEquals(certificateService.findCertificateById(2), firstTestCertificate);
+        Assertions.assertEquals(certificateService.findCertificateById(2), firstTestCertificate);
     }
 
     @Test
     void findUnknownCertificateByIdTest() {
         when(certificateDao.findById(2)).thenReturn(Optional.empty());
-        Assert.assertThrows(UnknownCertificateException.class, () -> certificateService.findCertificateById(2));
+        Assertions.assertThrows(UnknownCertificateException.class, () -> certificateService.findCertificateById(2));
     }
 
     @Test
@@ -118,7 +118,7 @@ class CertificateServiceImplTest {
         when(certificateDao.findById(2)).thenReturn(Optional.of(firstTestCertificate));
         when(certificateDao.remove(2)).thenReturn(true);
 
-        Assert.assertTrue(certificateService.removeCertificateById(2));
+        Assertions.assertTrue(certificateService.removeCertificateById(2));
     }
 
     @Test
@@ -126,7 +126,7 @@ class CertificateServiceImplTest {
         when(certificateDao.findById(2)).thenReturn(Optional.empty());
         when(certificateDao.remove(2)).thenReturn(false);
 
-        Assert.assertThrows(UnknownCertificateException.class, () -> certificateService.removeCertificateById(2));
+        Assertions.assertThrows(UnknownCertificateException.class, () -> certificateService.removeCertificateById(2));
     }
 
     @Test
@@ -138,7 +138,7 @@ class CertificateServiceImplTest {
         when(certificateDao.clearCertificateTags(2)).thenReturn(true);
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doNothing().when(spyCertificateService).addCertificateTags(isA(Long.class), isA(List.class));
-        Assert.assertEquals(spyCertificateService.updateCertificate(firstTestCertificate), firstTestCertificate);
+        Assertions.assertEquals(spyCertificateService.updateCertificate(firstTestCertificate), firstTestCertificate);
     }
 
     @Test
@@ -150,7 +150,7 @@ class CertificateServiceImplTest {
         when(certificateDao.clearCertificateTags(2)).thenReturn(true);
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doNothing().when(spyCertificateService).addCertificateTags(isA(Long.class), isA(List.class));
-        Assert.assertThrows(InvalidCertificateException.class, () -> spyCertificateService.updateCertificate(firstTestCertificate));
+        Assertions.assertThrows(InvalidCertificateException.class, () -> spyCertificateService.updateCertificate(firstTestCertificate));
     }
 
     @Test
@@ -162,7 +162,7 @@ class CertificateServiceImplTest {
         when(certificateDao.clearCertificateTags(2)).thenReturn(true);
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doNothing().when(spyCertificateService).addCertificateTags(isA(Long.class), isA(List.class));
-        Assert.assertThrows(DuplicateCertificateException.class, () -> spyCertificateService.updateCertificate(firstTestCertificate));
+        Assertions.assertThrows(DuplicateCertificateException.class, () -> spyCertificateService.updateCertificate(firstTestCertificate));
     }
 
     @Test
@@ -178,7 +178,7 @@ class CertificateServiceImplTest {
         when(certificateFullDataCollector.collectFullCertificateData(testCertificate, firstTestCertificate)).thenReturn(result);
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doReturn(result).when(spyCertificateService).updateCertificate(result);
-        Assert.assertEquals(spyCertificateService.patchCertificate(testCertificate), result);
+        Assertions.assertEquals(spyCertificateService.patchCertificate(testCertificate), result);
     }
 
     @Test
@@ -194,6 +194,6 @@ class CertificateServiceImplTest {
         when(certificateFullDataCollector.collectFullCertificateData(testCertificate, firstTestCertificate)).thenReturn(result);
         CertificateServiceImpl spyCertificateService = Mockito.spy(certificateService);
         doReturn(result).when(spyCertificateService).updateCertificate(result);
-        Assert.assertThrows(UnknownCertificateException.class, () -> spyCertificateService.patchCertificate(testCertificate));
+        Assertions.assertThrows(UnknownCertificateException.class, () -> spyCertificateService.patchCertificate(testCertificate));
     }
 }

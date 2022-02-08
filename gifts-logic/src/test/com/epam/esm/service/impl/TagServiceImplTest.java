@@ -4,11 +4,10 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.checker.TagDuplicationChecker;
 import com.epam.esm.service.exception.DuplicateTagException;
-import com.epam.esm.service.exception.InvalidCertificateException;
 import com.epam.esm.service.exception.InvalidTagException;
 import com.epam.esm.service.exception.UnknownTagException;
 import com.epam.esm.service.validator.TagValidator;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +44,7 @@ class TagServiceImplTest {
         when(tagDuplicationChecker.checkTagForDuplication(firstTestTag)).thenReturn(true);
         when(tagDao.add(firstTestTag)).thenReturn(true);
         when(tagDao.findByName(firstTestTag.getName())).thenReturn(Optional.of(firstTestTag));
-        Assert.assertEquals(tagService.addTag(firstTestTag), firstTestTag);
+        Assertions.assertEquals(tagService.addTag(firstTestTag), firstTestTag);
     }
 
     @Test
@@ -55,7 +53,7 @@ class TagServiceImplTest {
         when(tagDuplicationChecker.checkTagForDuplication(firstTestTag)).thenReturn(true);
         when(tagDao.add(firstTestTag)).thenReturn(true);
         when(tagDao.findByName(firstTestTag.getName())).thenReturn(Optional.of(firstTestTag));
-        Assert.assertThrows(InvalidTagException.class, () -> tagService.addTag(firstTestTag));
+        Assertions.assertThrows(InvalidTagException.class, () -> tagService.addTag(firstTestTag));
     }
 
     @Test
@@ -64,50 +62,50 @@ class TagServiceImplTest {
         when(tagDuplicationChecker.checkTagForDuplication(firstTestTag)).thenReturn(false);
         when(tagDao.add(firstTestTag)).thenReturn(true);
         when(tagDao.findByName(firstTestTag.getName())).thenReturn(Optional.of(firstTestTag));
-        Assert.assertThrows(DuplicateTagException.class, () -> tagService.addTag(firstTestTag));
+        Assertions.assertThrows(DuplicateTagException.class, () -> tagService.addTag(firstTestTag));
     }
 
     @Test
     void findAllTagsTest() {
         when(tagDao.findAll()).thenReturn(tags);
-        Assert.assertEquals(tagService.findAllTags(), tags);
+        Assertions.assertEquals(tagService.findAllTags(), tags);
     }
 
     @Test
     void findTagByIdTest() {
         when(tagDao.findById(1)).thenReturn(Optional.of(firstTestTag));
-        Assert.assertEquals(tagService.findTagById(1), firstTestTag);
+        Assertions.assertEquals(tagService.findTagById(1), firstTestTag);
     }
 
     @Test
     void findTagWithInvalidIdTest() {
         when(tagDao.findById(1)).thenReturn(Optional.empty());
-        Assert.assertThrows(UnknownTagException.class, () -> tagService.findTagById(1));
+        Assertions.assertThrows(UnknownTagException.class, () -> tagService.findTagById(1));
     }
 
     @Test
     void findTagByNameTest() {
         when(tagDao.findByName("Jumps")).thenReturn(Optional.of(firstTestTag));
-        Assert.assertEquals(tagService.findTagByName("Jumps"), firstTestTag);
+        Assertions.assertEquals(tagService.findTagByName("Jumps"), firstTestTag);
     }
 
     @Test
     void findTagWithInvalidNameTest() {
         when(tagDao.findByName("Jumps")).thenReturn(Optional.empty());
-        Assert.assertThrows(UnknownTagException.class, () -> tagService.findTagByName("Jumps"));
+        Assertions.assertThrows(UnknownTagException.class, () -> tagService.findTagByName("Jumps"));
     }
 
     @Test
     void removeTagByIdPositiveTest() {
         when(tagDao.findById(1)).thenReturn(Optional.of(firstTestTag));
         when(tagDao.remove(1)).thenReturn(true);
-        Assert.assertTrue(tagService.removeTagById(1));
+        Assertions.assertTrue(tagService.removeTagById(1));
     }
 
     @Test
     void removeTagWithInvalidIdTest() {
         when(tagDao.findById(1)).thenReturn(Optional.empty());
-        Assert.assertThrows(UnknownTagException.class ,() -> tagService.removeTagById(1));
+        Assertions.assertThrows(UnknownTagException.class ,() -> tagService.removeTagById(1));
     }
 
     @Test
@@ -116,7 +114,7 @@ class TagServiceImplTest {
         when(tagValidator.validateTag(firstTestTag)).thenReturn(true);
         when(tagDuplicationChecker.checkTagForDuplication(firstTestTag)).thenReturn(true);
         when(tagDao.findById(1)).thenReturn(Optional.of(firstTestTag));
-        Assert.assertEquals(tagService.updateTag(firstTestTag), firstTestTag);
+        Assertions.assertEquals(tagService.updateTag(firstTestTag), firstTestTag);
     }
 
     @Test
@@ -125,7 +123,7 @@ class TagServiceImplTest {
         when(tagValidator.validateTag(firstTestTag)).thenReturn(false);
         when(tagDuplicationChecker.checkTagForDuplication(firstTestTag)).thenReturn(true);
         when(tagDao.findById(1)).thenReturn(Optional.of(firstTestTag));
-        Assert.assertThrows(InvalidTagException.class, () -> tagService.updateTag(firstTestTag));
+        Assertions.assertThrows(InvalidTagException.class, () -> tagService.updateTag(firstTestTag));
     }
 
     @Test
@@ -134,6 +132,6 @@ class TagServiceImplTest {
         when(tagValidator.validateTag(firstTestTag)).thenReturn(true);
         when(tagDuplicationChecker.checkTagForDuplication(firstTestTag)).thenReturn(false);
         when(tagDao.findById(1)).thenReturn(Optional.of(firstTestTag));
-        Assert.assertThrows(DuplicateTagException.class, () -> tagService.updateTag(firstTestTag));
+        Assertions.assertThrows(DuplicateTagException.class, () -> tagService.updateTag(firstTestTag));
     }
 }

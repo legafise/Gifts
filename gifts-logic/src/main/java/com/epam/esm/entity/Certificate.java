@@ -34,37 +34,6 @@ public class Certificate {
         this.tags = tags;
     }
 
-    public Certificate(String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, List<Tag> tags) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.duration = duration;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        this.tags = tags;
-    }
-
-    public Certificate(String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.duration = duration;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        tags = new ArrayList<>();
-    }
-
-    public Certificate(long id, String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.duration = duration;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        tags = new ArrayList<>();
-    }
-
     public long getId() {
         return id;
     }

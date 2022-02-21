@@ -16,11 +16,12 @@
 
     <properties>
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
-        <gifts.logic.version>1.0-SNAPSHOT</gifts.logic.version>
+        <gifts.version>1.0-SNAPSHOT</gifts.version>
         <h2databse.versoin>2.1.210</h2databse.versoin>
         <mysql.connector.version>8.0.19</mysql.connector.version>
         <jackson.version>2.13.1</jackson.version>
         <spring.boot.version>2.6.3</spring.boot.version>
+        <dbunit.version>2.5.3</dbunit.version>
     </properties>
 
     <dependencyManagement>
@@ -60,7 +61,7 @@
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>gifts-logic</artifactId>
-                <version>${gifts.logic.version}</version>
+                <version>${gifts.version}</version>
             </dependency>
 
             <dependency>
@@ -73,6 +74,13 @@
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.dbunit</groupId>
+                <artifactId>dbunit</artifactId>
+                <version>${dbunit.version}</version>
+                <scope>compile</scope>
             </dependency>
 
             <dependency>

@@ -87,16 +87,17 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public boolean removeTagById(long id) {
+    public void removeTagById(long id) {
         if (!tagDao.findById(id).isPresent()) {
             throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
         }
 
         tagDao.removeTagFromCertificates(id);
-        return tagDao.remove(id);
+        tagDao.remove(id);
     }
 
     @Override
+    @Transactional
     public void addTagIfNotExists(Tag tag) {
         Optional<Tag> searchedTag = tagDao.findByName(tag.getName());
         if (!searchedTag.isPresent()) {

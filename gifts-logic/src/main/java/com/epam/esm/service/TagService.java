@@ -15,7 +15,7 @@ public interface TagService {
 
     Tag updateTag(Tag tag);
 
-    boolean removeTagById(long id);
+    void removeTagById(long id);
 
     void addTagIfNotExists(Tag tag);
 }

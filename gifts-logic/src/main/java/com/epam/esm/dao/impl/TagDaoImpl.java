@@ -1,71 +1,80 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.dao.mapper.TagMapperImpl;
-import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
-    private static final String ADD_TAG_SQL = "INSERT INTO tag (name) VALUES (?)";
-    private static final String FIND_TAG_BY_ID_SQL = "SELECT tag.id AS tag_id, tag.name AS tag_name FROM tag WHERE tag.id = ?";
-    private static final String FIND_TAG_BY_NAME_SQL = "SELECT tag.id AS tag_id, tag.name AS tag_name FROM tag WHERE tag.name = ?";
-    private static final String FIND_ALL_TAGS_SQL = "SELECT tag.id AS tag_id, tag.name AS tag_name FROM tag";
-    private static final String REMOVE_TAG_BY_ID_SQL = "DELETE FROM tag WHERE id = ?";
-    private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE gift_tags.tag_id = ?";
-    private static final String UPDATE_TAG_SQL = "UPDATE tag SET name = ? WHERE id = ?";
-    private final TagMapperImpl tagMapper;
-    private final JdbcTemplate jdbcTemplate;
+    private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE tag_id = ?";
+    private EntityManager entityManager;
 
-    @Autowired
-    public TagDaoImpl(TagMapperImpl tagMapper, JdbcTemplate jdbcTemplate) {
-        this.tagMapper = tagMapper;
-        this.jdbcTemplate = jdbcTemplate;
+    @PersistenceContext
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
-    public boolean add(Tag tag) {
-        return 1 == jdbcTemplate.update(ADD_TAG_SQL, tag.getName());
+    public void add(Tag tag) {
+        tag.setId(0);
+        entityManager.persist(tag);
     }
 
     @Override
     public Optional<Tag> findById(long id) {
-        List<Tag> tagList = jdbcTemplate.query(FIND_TAG_BY_ID_SQL, new Object[]{id}, tagMapper);
-
-        return tagList.isEmpty() ? Optional.empty() : Optional.of(tagList.get(0));
+        return Optional.ofNullable(entityManager.find(Tag.class, id));
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
-        List<Tag> tagList = jdbcTemplate.query(FIND_TAG_BY_NAME_SQL, new Object[]{name}, tagMapper);
-
-        return tagList.isEmpty() ? Optional.empty() : Optional.of(tagList.get(0));
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> rootEntry = criteriaQuery.from(Tag.class);
+        criteriaQuery.select(rootEntry).where(criteriaBuilder.equal(rootEntry.get("name"), name));
+        TypedQuery<Tag> nameQuery = entityManager.createQuery(criteriaQuery);
+        return nameQuery.getResultList().stream()
+                .findFirst();
     }
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(FIND_ALL_TAGS_SQL, tagMapper);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> rootEntry = criteriaQuery.from(Tag.class);
+        criteriaQuery.select(rootEntry);
+        TypedQuery<Tag> allTagsQuery = entityManager.createQuery(criteriaQuery);
+        return allTagsQuery.getResultList();
     }
 
     @Override
-    public boolean update(Tag tag) {
-        return 1 <= jdbcTemplate.update(UPDATE_TAG_SQL, tag.getName(), tag.getId());
+    @Transactional
+    public Tag update(Tag tag) {
+        return entityManager.merge(tag);
     }
 
     @Override
-    public boolean remove(long id) {
-        return 1 == jdbcTemplate.update(REMOVE_TAG_BY_ID_SQL, id);
+    public void remove(long id) {
+        Tag removingTag = entityManager.find(Tag.class, id);
+        entityManager.remove(removingTag);
     }
 
     @Override
     public void removeTagFromCertificates(long id) {
-        jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL, id);
+        Query nativeQuery = entityManager.createNativeQuery(REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL);
+        nativeQuery.setParameter(1, id);
+        nativeQuery.executeUpdate();
     }
 }

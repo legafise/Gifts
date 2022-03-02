@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class CertificateValidatorImpl implements CertificateValidator {
@@ -56,7 +57,7 @@ public class CertificateValidatorImpl implements CertificateValidator {
         return cause.toString();
     }
 
-    private void validateTags(List<Tag> tags) {
+    private void validateTags(Set<Tag> tags) {
         if (tags == null) {
             invalidValues.add("tags is null");
         }

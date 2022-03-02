@@ -14,7 +14,7 @@ public interface CertificateService {
 
     Certificate updateCertificate(Certificate certificate);
 
-    boolean removeCertificateById(long id);
+    void removeCertificateById(long id);
 
     Certificate patchCertificate(Certificate certificate);
 }

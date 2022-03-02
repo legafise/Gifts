@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,12 +49,15 @@ public class CertificateServiceImpl implements CertificateService {
             throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
         }
 
+        Set<Tag> tags = certificate.getTags();
+        certificate.setTags(new HashSet<>());
         certificateDao.add(certificate);
         long addedCertificateId = Collections.max(certificateDao.findAll().stream()
                 .map(Certificate::getId)
                 .collect(Collectors.toList()));
-        addCertificateTags(addedCertificateId, certificate.getTags());
-        return certificateDao.findById(addedCertificateId).get();
+
+        addCertificateTags(addedCertificateId, tags);
+        return findCertificateById(addedCertificateId);
     }
 
     @Override
@@ -88,72 +88,51 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public Certificate updateCertificate(Certificate certificate) {
-        Optional<Certificate> actualCertificate = certificateDao.findById(certificate.getId());
-        if (!actualCertificate.isPresent()) {
-            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
-        }
+        Certificate actualCertificate = findCertificateById(certificate.getId());
 
+        if (certificate.getTags().isEmpty()) {
+            certificate.setTags(new HashSet<>(actualCertificate.getTags()));
+        }
         certificate.setLastUpdateDate(LocalDateTime.now());
-        certificate.setCreateDate(actualCertificate.get().getCreateDate());
+        certificate.setCreateDate(actualCertificate.getCreateDate());
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate)) {
             throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
         }
 
+        Set<Tag> tags = certificate.getTags();
+        certificate.setTags(new HashSet<>());
         certificateDao.update(certificate);
-        updateCertificateTags(certificate);
+        addCertificateTags(certificate.getId(), tags);
         return findCertificateById(certificate.getId());
     }
 
     @Override
     @Transactional
-    public boolean removeCertificateById(long id) {
-        certificateDao.clearCertificateTags(id);
-        if (!certificateDao.remove(id)) {
+    public void removeCertificateById(long id) {
+        if (!certificateDao.findById(id).isPresent()) {
             throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
-        return true;
+        certificateDao.clearCertificateTags(id);
+        certificateDao.remove(id);
     }
 
     @Override
     @Transactional
     public Certificate patchCertificate(Certificate certificate) {
-        Optional<Certificate> actualCertificate = certificateDao.findById(certificate.getId());
-        if (!actualCertificate.isPresent()) {
-            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
-        }
         return updateCertificate(certificateFullDataCollector
-                .collectFullCertificateData(certificate, actualCertificate.get()));
+                .collectFullCertificateData(certificate, findCertificateById(certificate.getId())));
     }
 
-    private boolean isExistentConnectionBetweenCertificateAndTag(long certificateId, long tagId) {
-        Optional<Certificate> certificate = certificateDao.findById(certificateId);
-        if (!certificate.isPresent()) {
-            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
-        }
-
-        return certificate.get().getTags().stream()
-                .noneMatch(tag -> tag.getId() == tagId);
-    }
-
-    public void addCertificateTags(long certificateId, List<Tag> tags) {
+    public void addCertificateTags(long certificateId, Set<Tag> tags) {
         if (!tags.isEmpty()) {
             tags.forEach(tag -> {
                 tagService.addTagIfNotExists(tag);
                 Tag currentTag = tagService.findTagByName(tag.getName());
-                if (isExistentConnectionBetweenCertificateAndTag(certificateId, currentTag.getId())) {
-                    certificateDao.addTagToCertificate(certificateId, currentTag.getId());
-                }
+                certificateDao.addTagToCertificate(certificateId, currentTag.getId());
             });
-        }
-    }
-
-    private void updateCertificateTags(Certificate certificate) {
-        if (!certificate.getTags().isEmpty()) {
-            certificateDao.clearCertificateTags(certificate.getId());
-            addCertificateTags(certificate.getId(), certificate.getTags());
         }
     }
 }

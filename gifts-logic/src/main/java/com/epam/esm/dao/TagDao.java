@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TagDao {
-    boolean add(Tag tag);
+    void add(Tag tag);
 
     Optional<Tag> findById(long id);
 
@@ -14,9 +14,9 @@ public interface TagDao {
 
     List<Tag> findAll();
 
-    boolean update(Tag certificate);
+    Tag update(Tag tag);
 
-    boolean remove(long id);
+    void remove(long id);
 
     void removeTagFromCertificates(long id);
 }

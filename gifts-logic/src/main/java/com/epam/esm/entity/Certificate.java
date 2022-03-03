@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
+
 @Entity
 @Table(name = "gift_certificate")
 public class Certificate {
-    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm'Z'";
-
     @Id
     private long id;
     private String name;

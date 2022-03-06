@@ -2,8 +2,6 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +12,17 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
     private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE tag_id = ?";
+    private static final String FIND_WIDELY_USED_TAG = "SELECT tag_id FROM (SELECT tag.id AS tag_id, SUM(orders.price)" +
+            " AS tag_orders_price FROM gifts.orders INNER JOIN gift_certificate ON orders.certificate_id = gift_certificate.id" +
+            " LEFT JOIN gift_tags ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON tag.id = gift_tags.tag_id" +
+            " GROUP BY tag_id ORDER BY tag_orders_price DESC LIMIT 1) A";
     private EntityManager entityManager;
 
     @PersistenceContext
@@ -76,5 +79,11 @@ public class TagDaoImpl implements TagDao {
         Query nativeQuery = entityManager.createNativeQuery(REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL);
         nativeQuery.setParameter(1, id);
         nativeQuery.executeUpdate();
+    }
+
+    @Override
+    public Tag findWidelyUsedTag() {
+        BigInteger widelyUsedTagId = (BigInteger) entityManager.createNativeQuery(FIND_WIDELY_USED_TAG).getResultList().get(0);
+        return entityManager.find(Tag.class, widelyUsedTagId.longValue());
     }
 }

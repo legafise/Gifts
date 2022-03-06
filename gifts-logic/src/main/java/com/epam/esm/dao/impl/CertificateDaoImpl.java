@@ -3,7 +3,6 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.entity.Certificate;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +13,13 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class CertificateDaoImpl implements CertificateDao {
+    private static final String FIND_MAX_CERTIFICATE_ID = "SELECT MAX(id) FROM gift_certificate";
     private static final String ADD_TAG_TO_CERTIFICATE_SQL = "INSERT INTO gift_tags (certificate_id, tag_id) VALUES (?, ?)";
     private static final String CLEAR_CERTIFICATE_TAGS_QUERY = "DELETE FROM gift_tags WHERE certificate_id = ?";
     private EntityManager entityManager;
@@ -30,6 +31,7 @@ public class CertificateDaoImpl implements CertificateDao {
 
     @Override
     public void add(Certificate certificate) {
+        certificate.setId(0);
         entityManager.persist(certificate);
     }
 
@@ -94,5 +96,11 @@ public class CertificateDaoImpl implements CertificateDao {
         TypedQuery<Certificate> nameQuery = entityManager.createQuery(criteriaQuery);
         return nameQuery.getResultList().stream()
                 .findFirst();
+    }
+
+    @Override
+    public long findMaxCertificateId() {
+        BigInteger maxCertificateId = (BigInteger) entityManager.createNativeQuery(FIND_MAX_CERTIFICATE_ID).getResultList().get(0);
+        return maxCertificateId.longValue();
     }
 }

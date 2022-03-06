@@ -21,4 +21,6 @@ public interface CertificateDao {
     boolean clearCertificateTags(long certificateId);
 
     Optional<Certificate> findByName(String name);
+
+    long findMaxCertificateId();
 }

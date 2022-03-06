@@ -2,10 +2,12 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.entity.User;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 @Repository
 public class UserDaoImpl implements UserDao {
+    private static final String ADD_ORDER_TO_USER_QUERY = "INSERT INTO user_orders (user_id, order_id) VALUES (?, ?)";
     private EntityManager entityManager;
 
     @PersistenceContext
@@ -29,11 +32,27 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
+        entityManager.unwrap(Session.class).clear();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
         Root<User> root = query.from(User.class);
         query.select(root);
         TypedQuery<User> findAllQuery = entityManager.createQuery(query);
+
         return findAllQuery.getResultList();
+    }
+
+    @Override
+    public User update(User user) {
+        return entityManager.merge(user);
+    }
+
+    @Override
+    public boolean addOrderToUser(long userId, long orderId) {
+        Query addOrderToUserQuery = entityManager.createNativeQuery(ADD_ORDER_TO_USER_QUERY);
+        addOrderToUserQuery.setParameter(1, userId);
+        addOrderToUserQuery.setParameter(2, orderId);
+
+        return addOrderToUserQuery.executeUpdate() >= 1;
     }
 }

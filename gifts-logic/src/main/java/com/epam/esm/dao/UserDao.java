@@ -7,5 +7,10 @@ import java.util.Optional;
 
 public interface UserDao {
     Optional<User> findById(long id);
+
     List<User> findAll();
+
+    User update(User user);
+
+    boolean addOrderToUser(long userId, long orderId);
 }

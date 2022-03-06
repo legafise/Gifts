@@ -19,4 +19,6 @@ public interface TagDao {
     void remove(long id);
 
     void removeTagFromCertificates(long id);
+
+    Tag findWidelyUsedTag();
 }

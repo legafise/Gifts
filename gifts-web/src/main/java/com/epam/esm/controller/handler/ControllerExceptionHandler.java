@@ -9,72 +9,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.epam.esm.controller.handler.EntityErrorCodes.*;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     private final Localizer localizer;
     private static final String NUMBER_FORMAT_ERROR_MESSAGE = "invalid.number.value.was.entered";
-    private static final String CERTIFICATE_ERROR_CODE = "01";
-    private static final String TAG_ERROR_CODE = "02";
 
     @Autowired
     public ControllerExceptionHandler(Localizer localizer) {
         this.localizer = localizer;
     }
 
-    @ExceptionHandler(InvalidCertificateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCertificateException(InvalidCertificateException e) {
-        String errorMessage = String.format(localizer.toLocale("invalid.certificate"), e.getMessage());
-        return getErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
-    }
-
-    @ExceptionHandler(InvalidTagException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidTagException(InvalidTagException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, TAG_ERROR_CODE);
-    }
-
-    @ExceptionHandler(DuplicateTagException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateTagException(DuplicateTagException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.CONFLICT, TAG_ERROR_CODE);
-    }
-
-    @ExceptionHandler(DuplicateCertificateException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateCertificateException(DuplicateCertificateException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.CONFLICT, CERTIFICATE_ERROR_CODE);
+    @ExceptionHandler(EntityException.class)
+    public ResponseEntity<ErrorResponse> handleServiceException(EntityException e) {
+        return EntityExceptionHandler.findExceptionHandler(e.getEntityClass(), e.getClass()).handle(e, localizer);
     }
 
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<ErrorResponse> handleNumberFormatException() {
-        return getErrorResponse(NUMBER_FORMAT_ERROR_MESSAGE, HttpStatus.BAD_REQUEST, "");
+        return ErrorResponseCreator.createErrorResponse(NUMBER_FORMAT_ERROR_MESSAGE, HttpStatus.BAD_REQUEST, DEFAULT_ERROR_CODE.getErrorCode(), localizer);
     }
 
-    @ExceptionHandler(UnknownCertificateException.class)
-    public ResponseEntity<ErrorResponse> handleUnknownCertificateException(UnknownCertificateException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND, CERTIFICATE_ERROR_CODE);
-    }
-
-    @ExceptionHandler(UnknownTagException.class)
-    public ResponseEntity<ErrorResponse> handleUnknownTagException(UnknownTagException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND, TAG_ERROR_CODE);
-    }
-
-    @ExceptionHandler(InvalidSortParameterException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidSortParameterException(InvalidSortParameterException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
-    }
-
-    private ResponseEntity<ErrorResponse> getErrorResponse(String messageCode, HttpStatus status, String errorCode) {
-        String errorMessage = localizer.toLocale(messageCode);
-
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("errorMessage", errorMessage);
-        responseBody.put("errorCode", status.value() + errorCode);
-
-        ErrorResponse error = new ErrorResponse();
-        error.setResponseBody(responseBody);
-
-        return new ResponseEntity<>(error, status);
+    @ExceptionHandler(NotEnoughMoneyException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughMoneyException(NotEnoughMoneyException e) {
+        return ErrorResponseCreator.createErrorResponse(e.getMessage(), HttpStatus.PAYMENT_REQUIRED, USER_ERROR_CODE.getErrorCode(), localizer);
     }
 }

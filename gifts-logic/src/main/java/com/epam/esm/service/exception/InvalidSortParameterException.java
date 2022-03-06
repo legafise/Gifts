@@ -1,11 +1,14 @@
 package com.epam.esm.service.exception;
 
-public class InvalidSortParameterException extends ServiceException {
+import com.epam.esm.entity.BaseEntity;
+
+public class InvalidSortParameterException extends EntityException {
     public InvalidSortParameterException() {
+        super();
     }
 
-    public InvalidSortParameterException(String message) {
-        super(message);
+    public InvalidSortParameterException(Class<? extends BaseEntity> entityClass, String message) {
+        super(entityClass, message);
     }
 
     public InvalidSortParameterException(String message, Throwable cause) {
@@ -16,7 +19,7 @@ public class InvalidSortParameterException extends ServiceException {
         super(cause);
     }
 
-    public InvalidSortParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected InvalidSortParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -25,6 +25,12 @@ public class TagController {
         return tagService.findAllTags();
     }
 
+    @GetMapping("/widelyUsedTag")
+    @ResponseStatus(OK)
+    public Tag readWidelyUsedTag() {
+        return tagService.findWidelyUsedTag();
+    }
+
     @PostMapping
     @ResponseStatus(CREATED)
     public Tag createTag(@RequestBody Tag tag) {

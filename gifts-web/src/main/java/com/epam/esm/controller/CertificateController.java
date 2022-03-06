@@ -22,8 +22,9 @@ public class CertificateController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<Certificate> readAllCertificates(@RequestParam Map<String, String> parameters) {
-        return certificateService.findAllCertificates(parameters);
+    public List<Certificate> readAllCertificates(@RequestParam Map<String, String> parameters, @RequestParam List<String> tagNames) {
+        parameters.remove("tagNames");
+        return certificateService.findAllCertificates(parameters, tagNames);
     }
 
     @GetMapping("/{id}")

@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,11 @@ public class UserController {
     @ResponseStatus(OK)
     public List<User> readAllUsers() {
         return userService.findAllUsers();
+    }
+
+    @GetMapping("/{userId}/orders")
+    @ResponseStatus(OK)
+    public List<Order> readAllUserOrders(@PathVariable long userId) {
+        return userService.findUserById(userId).getOrders();
     }
 }

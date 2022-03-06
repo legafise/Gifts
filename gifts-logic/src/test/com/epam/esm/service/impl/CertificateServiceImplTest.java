@@ -1,29 +1,5 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.CertificateDao;
-import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Tag;
-import com.epam.esm.service.TagService;
-import com.epam.esm.service.checker.CertificateDuplicationChecker;
-import com.epam.esm.service.collector.CertificateFullDataCollector;
-import com.epam.esm.service.exception.DuplicateCertificateException;
-import com.epam.esm.service.exception.InvalidCertificateException;
-import com.epam.esm.service.exception.UnknownCertificateException;
-import com.epam.esm.service.validator.CertificateValidator;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.*;
-
 //class CertificateServiceImplTest {
 //    private CertificateServiceImpl certificateService;
 //    private CertificateValidator certificateValidator;

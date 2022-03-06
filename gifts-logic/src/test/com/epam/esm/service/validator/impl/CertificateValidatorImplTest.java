@@ -1,17 +1,5 @@
 package com.epam.esm.service.validator.impl;
 
-import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Tag;
-import com.epam.esm.service.exception.InvalidCertificateException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
 //class CertificateValidatorImplTest {
 //    private CertificateValidatorImpl certificateValidator;
 //    private Certificate testCertificate;

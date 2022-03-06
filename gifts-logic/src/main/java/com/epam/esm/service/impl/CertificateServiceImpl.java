@@ -7,8 +7,8 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.CertificateDuplicationChecker;
 import com.epam.esm.service.collector.CertificateFullDataCollector;
-import com.epam.esm.service.exception.DuplicateCertificateException;
-import com.epam.esm.service.exception.UnknownCertificateException;
+import com.epam.esm.service.exception.DuplicateEntityException;
+import com.epam.esm.service.exception.UnknownEntityException;
 import com.epam.esm.service.handler.CertificatesHandler;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,23 +46,30 @@ public class CertificateServiceImpl implements CertificateService {
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)) {
-            throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
+            throw new DuplicateEntityException(Certificate.class, DUPLICATE_CERTIFICATE_MESSAGE);
         }
 
         Set<Tag> tags = certificate.getTags();
         certificate.setTags(new HashSet<>());
         certificateDao.add(certificate);
-        long addedCertificateId = Collections.max(certificateDao.findAll().stream()
-                .map(Certificate::getId)
-                .collect(Collectors.toList()));
-
+        long addedCertificateId = certificateDao.findMaxCertificateId();
         addCertificateTags(addedCertificateId, tags);
         return findCertificateById(addedCertificateId);
     }
 
     @Override
-    public List<Certificate> findAllCertificates(Map<String, String> handleParameters) {
+    public List<Certificate> findAllCertificates(Map<String, String> handleParameters, List<String> tagNames) {
         List<Certificate> certificates = certificateDao.findAll();
+
+        if (tagNames != null && !tagNames.isEmpty()) {
+            List<Tag> tags = tagNames.stream()
+                    .map(tagService::findTagByName)
+                    .collect(Collectors.toList());
+            certificates = certificates.stream()
+                    .filter(certificate -> certificate.getTags().stream()
+                            .anyMatch(tags::contains))
+                    .collect(Collectors.toList());
+        }
 
         if (handleParameters != null && !handleParameters.isEmpty()) {
             for (Map.Entry<String, String> parametersEntry : handleParameters.entrySet()) {
@@ -79,7 +86,7 @@ public class CertificateServiceImpl implements CertificateService {
     public Certificate findCertificateById(long id) {
         Optional<Certificate> certificate = certificateDao.findById(id);
         if (!certificate.isPresent()) {
-            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
+            throw new UnknownEntityException(Certificate.class, NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
         return certificate.get();
@@ -98,7 +105,7 @@ public class CertificateServiceImpl implements CertificateService {
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate)) {
-            throw new DuplicateCertificateException(DUPLICATE_CERTIFICATE_MESSAGE);
+            throw new DuplicateEntityException(Certificate.class, DUPLICATE_CERTIFICATE_MESSAGE);
         }
 
         Set<Tag> tags = certificate.getTags();
@@ -112,7 +119,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public void removeCertificateById(long id) {
         if (!certificateDao.findById(id).isPresent()) {
-            throw new UnknownCertificateException(NONEXISTENT_CERTIFICATE_MESSAGE);
+            throw new UnknownEntityException(Certificate.class, NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
         certificateDao.clearCertificateTags(id);

@@ -1,22 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.TagDao;
-import com.epam.esm.entity.Tag;
-import com.epam.esm.service.checker.TagDuplicationChecker;
-import com.epam.esm.service.exception.DuplicateTagException;
-import com.epam.esm.service.exception.InvalidTagException;
-import com.epam.esm.service.exception.UnknownTagException;
-import com.epam.esm.service.validator.TagValidator;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 //class TagServiceImplTest {
 //    private TagServiceImpl tagService;

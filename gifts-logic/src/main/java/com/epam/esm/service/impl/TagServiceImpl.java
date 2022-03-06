@@ -4,9 +4,9 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.TagDuplicationChecker;
-import com.epam.esm.service.exception.DuplicateTagException;
-import com.epam.esm.service.exception.InvalidTagException;
-import com.epam.esm.service.exception.UnknownTagException;
+import com.epam.esm.service.exception.DuplicateEntityException;
+import com.epam.esm.service.exception.InvalidEntityException;
+import com.epam.esm.service.exception.UnknownEntityException;
 import com.epam.esm.service.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,15 +35,15 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public Tag addTag(Tag tag) {
         if (!tagValidator.validateTag(tag)) {
-            throw new InvalidTagException(INVALID_TAG_MESSAGE);
+            throw new InvalidEntityException(Tag.class, INVALID_TAG_MESSAGE);
         }
 
         if (!tagDuplicationChecker.checkTagForDuplication(tag)) {
-            throw new DuplicateTagException(REPEATING_TAG_MESSAGE);
+            throw new DuplicateEntityException(Tag.class, REPEATING_TAG_MESSAGE);
         }
 
         tagDao.add(tag);
-        return tagDao.findByName(tag.getName()).get();
+        return findTagByName(tag.getName());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TagServiceImpl implements TagService {
     public Tag findTagById(long id) {
         Optional<Tag> tag = tagDao.findById(id);
         if (!tag.isPresent()) {
-            throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
+            throw new UnknownEntityException(Tag.class, NONEXISTENT_TAG_MESSAGE);
         }
 
         return tag.get();
@@ -65,7 +65,7 @@ public class TagServiceImpl implements TagService {
     public Tag findTagByName(String name) {
         Optional<Tag> tag = tagDao.findByName(name);
         if (!tag.isPresent()) {
-            throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
+            throw new UnknownEntityException(Tag.class, NONEXISTENT_TAG_MESSAGE);
         }
 
         return tag.get();
@@ -74,11 +74,11 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag updateTag(Tag tag) {
         if (!tagValidator.validateTag(tag)) {
-            throw new InvalidTagException(INVALID_TAG_MESSAGE);
+            throw new InvalidEntityException(Tag.class, INVALID_TAG_MESSAGE);
         }
 
         if (!tagDuplicationChecker.checkTagForDuplication(tag)) {
-            throw new DuplicateTagException(REPEATING_TAG_MESSAGE);
+            throw new DuplicateEntityException(Tag.class, REPEATING_TAG_MESSAGE);
         }
 
         tagDao.update(tag);
@@ -89,7 +89,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public void removeTagById(long id) {
         if (!tagDao.findById(id).isPresent()) {
-            throw new UnknownTagException(NONEXISTENT_TAG_MESSAGE);
+            throw new UnknownEntityException(Tag.class, NONEXISTENT_TAG_MESSAGE);
         }
 
         tagDao.removeTagFromCertificates(id);
@@ -103,5 +103,10 @@ public class TagServiceImpl implements TagService {
         if (!searchedTag.isPresent()) {
             addTag(tag);
         }
+    }
+
+    @Override
+    public Tag findWidelyUsedTag() {
+        return tagDao.findWidelyUsedTag();
     }
 }

@@ -10,15 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum CertificatesHandler {
-    FIND_BY_TAG_NAME("tagName") {
-        @Override
-        public List<Certificate> handle(List<Certificate> certificateList, String parameter) {
-            return certificateList.stream()
-                    .filter(currentCertificate -> currentCertificate.getTags().stream()
-                            .anyMatch(tag -> tag.getName().toUpperCase().equals(parameter.toUpperCase())))
-                    .collect(Collectors.toList());
-        }
-    },
     FIND_BY_NAME_PART("namePart") {
         @Override
         public List<Certificate> handle(List<Certificate> certificateList, String parameter) {
@@ -87,18 +78,18 @@ public enum CertificatesHandler {
     public static CertificatesHandler findHandlerByName(String handlerTypeName) {
         return Arrays.stream(values())
                 .filter(certificatesSortHandler -> certificatesSortHandler.getHandlerName()
-                        .toUpperCase().equals(handlerTypeName.toUpperCase()))
+                        .equalsIgnoreCase(handlerTypeName.toUpperCase()))
                 .findFirst()
-                .orElseThrow(() -> new InvalidSortParameterException(INVALID_HANDLER_MESSAGE));
+                .orElseThrow(() -> new InvalidSortParameterException(Certificate.class, INVALID_HANDLER_MESSAGE));
     }
 
     private static List<Certificate> defineListOrder(List<Certificate> certificateList, String orderParameter) {
         String parameterInUpperCase = orderParameter.toUpperCase();
         if (!parameterInUpperCase.equals(ASC_PARAMETER) && !parameterInUpperCase.equals(DESC_PARAMETER)) {
-            throw new InvalidSortParameterException(INVALID_SORT_PARAMETER_MESSAGE);
+            throw new InvalidSortParameterException(Certificate.class, INVALID_SORT_PARAMETER_MESSAGE);
         }
 
-       return orderParameter.toUpperCase().equals(ASC_PARAMETER)
+       return orderParameter.equalsIgnoreCase(ASC_PARAMETER)
                ? certificateList
                : invertCertificateList(certificateList);
     }

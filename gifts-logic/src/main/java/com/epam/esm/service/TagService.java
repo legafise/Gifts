@@ -18,4 +18,6 @@ public interface TagService {
     void removeTagById(long id);
 
     void addTagIfNotExists(Tag tag);
+
+    Tag findWidelyUsedTag();
 }

@@ -11,10 +11,7 @@ import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
 
 @Entity
 @Table(name = "orders")
-public class Order {
-    @Id
-    private long id;
-
+public class Order extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "certificate_id")
     private Certificate certificate;
@@ -25,18 +22,16 @@ public class Order {
     }
 
     public Order(long id, Certificate certificate, BigDecimal price, LocalDateTime purchaseTime) {
-        this.id = id;
+        super(id);
         this.certificate = certificate;
         this.price = price;
         this.purchaseTime = purchaseTime;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public Order(Certificate certificate, BigDecimal price, LocalDateTime purchaseTime) {
+        this.certificate = certificate;
+        this.price = price;
+        this.purchaseTime = purchaseTime;
     }
 
     public Certificate getCertificates() {
@@ -68,19 +63,20 @@ public class Order {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Order order = (Order) o;
-        return id == order.id && Objects.equals(certificate, order.certificate) && Objects.equals(price, order.price) && Objects.equals(purchaseTime, order.purchaseTime);
+        return Objects.equals(certificate, order.certificate) && Objects.equals(price, order.price) && Objects.equals(purchaseTime, order.purchaseTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, certificate, price, purchaseTime);
+        return Objects.hash(super.hashCode(), certificate, price, purchaseTime);
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +
+                "id=" + super.getId() +
                 ", certificates=" + certificate +
                 ", price=" + price +
                 ", purchaseTime=" + purchaseTime +

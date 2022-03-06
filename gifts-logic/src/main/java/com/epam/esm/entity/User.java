@@ -8,9 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
-    @Id
-    private long id;
+public class User extends BaseEntity {
     private String login;
     private BigDecimal balance;
 
@@ -24,18 +22,10 @@ public class User {
     }
 
     public User(long id, String login, BigDecimal balance, List<Order> orders) {
-        this.id = id;
+        super(id);
         this.login = login;
         this.balance = balance;
         this.orders = orders;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getLogin() {
@@ -66,19 +56,20 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         User user = (User) o;
-        return id == user.id && Objects.equals(login, user.login) && Objects.equals(balance, user.balance) && Objects.equals(orders, user.orders);
+        return Objects.equals(login, user.login) && Objects.equals(balance, user.balance) && Objects.equals(orders, user.orders);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, balance, orders);
+        return Objects.hash(super.hashCode(), login, balance, orders);
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
+                "id=" + super.getId() +
                 ", login='" + login + '\'' +
                 ", balance=" + balance +
                 ", orders=" + orders +

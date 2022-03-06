@@ -11,9 +11,7 @@ import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
 
 @Entity
 @Table(name = "gift_certificate")
-public class Certificate {
-    @Id
-    private long id;
+public class Certificate extends BaseEntity {
     private String name;
     private String description;
     private BigDecimal price;
@@ -31,7 +29,7 @@ public class Certificate {
     }
 
     public Certificate(long id, String name, String description, BigDecimal price, short duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, Set<Tag> tags) {
-        this.id = id;
+        super(id);
         this.name = name;
         this.description = description;
         this.price = price;
@@ -39,14 +37,6 @@ public class Certificate {
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
         this.tags = tags;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -81,6 +71,14 @@ public class Certificate {
         this.duration = duration;
     }
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     @JsonFormat(pattern = DATE_FORMAT_PATTERN)
     public LocalDateTime getCreateDate() {
         return createDate;
@@ -99,44 +97,29 @@ public class Certificate {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Certificate that = (Certificate) o;
-        return id == that.id &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(price, that.price) &&
-                Objects.equals(duration, that.duration) &&
-                Objects.equals(createDate, that.createDate) &&
-                Objects.equals(lastUpdateDate, that.lastUpdateDate) &&
-                Objects.equals(tags, that.tags);
+        return duration == that.duration && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(createDate, that.createDate) && Objects.equals(lastUpdateDate, that.lastUpdateDate) && Objects.equals(tags, that.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, price, duration, createDate, lastUpdateDate, tags);
+        return Objects.hash(super.hashCode(), name, description, price, duration, createDate, lastUpdateDate, tags);
     }
 
     @Override
     public String toString() {
         return "Certificate{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "id='" + super.getId() + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
-                ", duration=" + duration + " days" +
-                ", createDate='" + createDate + '\'' +
-                ", lastUpdateDate='" + lastUpdateDate + '\'' +
+                ", duration=" + duration +
+                ", createDate=" + createDate +
+                ", lastUpdateDate=" + lastUpdateDate +
                 ", tags=" + tags +
                 '}';
     }

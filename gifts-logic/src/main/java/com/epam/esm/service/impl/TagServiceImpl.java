@@ -4,7 +4,7 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.TagDuplicationChecker;
-import com.epam.esm.service.exception.DuplicateEntityException;
+import com.epam.esm.service.exception.EntityDuplicationException;
 import com.epam.esm.service.exception.InvalidEntityException;
 import com.epam.esm.service.exception.UnknownEntityException;
 import com.epam.esm.service.validator.TagValidator;
@@ -39,7 +39,7 @@ public class TagServiceImpl implements TagService {
         }
 
         if (!tagDuplicationChecker.checkTagForDuplication(tag)) {
-            throw new DuplicateEntityException(Tag.class, REPEATING_TAG_MESSAGE);
+            throw new EntityDuplicationException(Tag.class, REPEATING_TAG_MESSAGE);
         }
 
         tagDao.add(tag);
@@ -78,7 +78,7 @@ public class TagServiceImpl implements TagService {
         }
 
         if (!tagDuplicationChecker.checkTagForDuplication(tag)) {
-            throw new DuplicateEntityException(Tag.class, REPEATING_TAG_MESSAGE);
+            throw new EntityDuplicationException(Tag.class, REPEATING_TAG_MESSAGE);
         }
 
         tagDao.update(tag);

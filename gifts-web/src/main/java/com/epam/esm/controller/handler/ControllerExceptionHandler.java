@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import static com.epam.esm.controller.handler.EntityErrorCodes.*;
+import static com.epam.esm.controller.handler.EntityErrorCode.*;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
@@ -21,9 +21,9 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         this.localizer = localizer;
     }
 
-    @ExceptionHandler(EntityException.class)
-    public ResponseEntity<ErrorResponse> handleServiceException(EntityException e) {
-        return EntityExceptionHandler.findExceptionHandler(e.getEntityClass(), e.getClass()).handle(e, localizer);
+    @ExceptionHandler(TypedServiceException.class)
+    public ResponseEntity<ErrorResponse> handleServiceException(TypedServiceException e) {
+        return EntityExceptionHandler.findExceptionHandler(e).handle(e, localizer);
     }
 
     @ExceptionHandler(NumberFormatException.class)
@@ -34,5 +34,20 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotEnoughMoneyException.class)
     public ResponseEntity<ErrorResponse> handleNotEnoughMoneyException(NotEnoughMoneyException e) {
         return ErrorResponseCreator.createErrorResponse(e.getMessage(), HttpStatus.PAYMENT_REQUIRED, USER_ERROR_CODE.getErrorCode(), localizer);
+    }
+
+    @ExceptionHandler(MissingPageNumberException.class)
+    public ResponseEntity<ErrorResponse> handleMissingPageNumberException(MissingPageNumberException e) {
+        return ErrorResponseCreator.createErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, DEFAULT_ERROR_CODE.getErrorCode(), localizer);
+    }
+
+    @ExceptionHandler(InvalidSortParameterException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSortParameterException(InvalidSortParameterException e) {
+        return ErrorResponseCreator.createErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, DEFAULT_ERROR_CODE.getErrorCode(), localizer);
+    }
+
+    @ExceptionHandler(InvalidPaginationDataException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPaginationDataException(InvalidPaginationDataException e) {
+        return ErrorResponseCreator.createErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, DEFAULT_ERROR_CODE.getErrorCode(), localizer);
     }
 }

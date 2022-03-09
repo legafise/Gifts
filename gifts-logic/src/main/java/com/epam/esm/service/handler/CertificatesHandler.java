@@ -80,13 +80,13 @@ public enum CertificatesHandler {
                 .filter(certificatesSortHandler -> certificatesSortHandler.getHandlerName()
                         .equalsIgnoreCase(handlerTypeName.toUpperCase()))
                 .findFirst()
-                .orElseThrow(() -> new InvalidSortParameterException(Certificate.class, INVALID_HANDLER_MESSAGE));
+                .orElseThrow(() -> new InvalidSortParameterException(INVALID_HANDLER_MESSAGE));
     }
 
     private static List<Certificate> defineListOrder(List<Certificate> certificateList, String orderParameter) {
         String parameterInUpperCase = orderParameter.toUpperCase();
         if (!parameterInUpperCase.equals(ASC_PARAMETER) && !parameterInUpperCase.equals(DESC_PARAMETER)) {
-            throw new InvalidSortParameterException(Certificate.class, INVALID_SORT_PARAMETER_MESSAGE);
+            throw new InvalidSortParameterException(INVALID_SORT_PARAMETER_MESSAGE);
         }
 
        return orderParameter.equalsIgnoreCase(ASC_PARAMETER)

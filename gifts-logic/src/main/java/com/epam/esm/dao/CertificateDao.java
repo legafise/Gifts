@@ -10,7 +10,7 @@ public interface CertificateDao {
 
     Optional<Certificate> findById(long id);
 
-    List<Certificate> findAll();
+    List<Certificate> findAll(int page, int pageSize);
 
     Certificate update(Certificate certificate);
 

@@ -25,7 +25,7 @@ public class TagController {
         return tagService.findAllTags();
     }
 
-    @GetMapping("/widelyUsedTag")
+    @GetMapping("/widely-used-tag")
     @ResponseStatus(OK)
     public Tag readWidelyUsedTag() {
         return tagService.findWidelyUsedTag();

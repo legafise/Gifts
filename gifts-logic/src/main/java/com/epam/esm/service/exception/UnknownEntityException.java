@@ -2,7 +2,7 @@ package com.epam.esm.service.exception;
 
 import com.epam.esm.entity.BaseEntity;
 
-public class UnknownEntityException extends EntityException {
+public class UnknownEntityException extends TypedServiceException {
     public UnknownEntityException() {
         super();
     }

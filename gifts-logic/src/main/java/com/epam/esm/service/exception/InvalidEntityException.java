@@ -2,7 +2,7 @@ package com.epam.esm.service.exception;
 
 import com.epam.esm.entity.BaseEntity;
 
-public class InvalidEntityException extends EntityException {
+public class InvalidEntityException extends TypedServiceException {
     public InvalidEntityException() {
         super();
     }

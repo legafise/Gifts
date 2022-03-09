@@ -47,12 +47,14 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public List<Certificate> findAll() {
+    public List<Certificate> findAll(int page, int pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
         Root<Certificate> root = criteriaQuery.from(Certificate.class);
         criteriaQuery.select(root);
         TypedQuery<Certificate> allCertificatesQuery = entityManager.createQuery(criteriaQuery);
+        allCertificatesQuery.setFirstResult((page - 1) * pageSize);
+        allCertificatesQuery.setMaxResults(pageSize);
         return allCertificatesQuery.getResultList();
     }
 

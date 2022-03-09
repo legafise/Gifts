@@ -1,84 +1,49 @@
 package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.localizer.Localizer;
-import com.epam.esm.entity.*;
-import com.epam.esm.service.exception.*;
+import com.epam.esm.entity.Certificate;
+import com.epam.esm.service.exception.EntityDuplicationException;
+import com.epam.esm.service.exception.TypedServiceException;
+import com.epam.esm.service.exception.InvalidEntityException;
+import com.epam.esm.service.exception.UnknownEntityException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 
-import static com.epam.esm.controller.handler.EntityErrorCodes.*;
+import static com.epam.esm.controller.handler.EntityErrorCode.DEFAULT_ERROR_CODE;
+
 
 public enum EntityExceptionHandler {
-    UNKNOWN_TAG_HANDLER(Tag.class, UnknownEntityException.class) {
+    UNKNOWN_ENTITY_HANDLER(UnknownEntityException.class) {
         @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.NOT_FOUND,
-                    TAG_ERROR_CODE.getErrorCode(), localizer);
+        ResponseEntity<ErrorResponse> handle(TypedServiceException typedServiceException, Localizer localizer) {
+            return ErrorResponseCreator.createErrorResponse(typedServiceException.getMessage(), HttpStatus.NOT_FOUND,
+                    EntityErrorCode.findErrorCodeByEntityClass(typedServiceException.getEntityClass()).getErrorCode(), localizer);
         }
     },
-    UNKNOWN_CERTIFICATE_HANDLER(Certificate.class, UnknownEntityException.class) {
+    DUPLICATE_ENTITY_HANDLER(EntityDuplicationException.class) {
         @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.NOT_FOUND,
-                    TAG_ERROR_CODE.getErrorCode(), localizer);
+        ResponseEntity<ErrorResponse> handle(TypedServiceException typedServiceException, Localizer localizer) {
+            return ErrorResponseCreator.createErrorResponse(typedServiceException.getMessage(), HttpStatus.CONFLICT,
+                    EntityErrorCode.findErrorCodeByEntityClass(typedServiceException.getEntityClass()).getErrorCode(), localizer);
         }
     },
-    UNKNOWN_USER_HANDLER(User.class, UnknownEntityException.class) {
+    INVALID_ENTITY_HANDLER(InvalidEntityException.class) {
         @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.NOT_FOUND,
-                    USER_ERROR_CODE.getErrorCode(), localizer);
+        ResponseEntity<ErrorResponse> handle(TypedServiceException typedServiceException, Localizer localizer) {
+            if (typedServiceException.getEntityClass().equals(Certificate.class)) {
+                typedServiceException = new TypedServiceException(typedServiceException.getEntityClass(),
+                        String.format(localizer.toLocale(INVALID_CERTIFICATE_MESSAGE), typedServiceException.getMessage()));
+            }
+
+            return ErrorResponseCreator.createErrorResponse(typedServiceException.getMessage(), HttpStatus.BAD_REQUEST,
+                    EntityErrorCode.findErrorCodeByEntityClass(typedServiceException.getEntityClass()).getErrorCode(), localizer);
         }
     },
-    UNKNOWN_ORDER_HANDLER(Order.class, UnknownEntityException.class) {
+    STANDARD_HANDLER(TypedServiceException.class) {
         @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.NOT_FOUND,
-                    ORDER_ERROR_CODE.getErrorCode(), localizer);
-        }
-    },
-    DUPLICATE_TAG_HANDLER(Tag.class, DuplicateEntityException.class) {
-        @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.CONFLICT,
-                    TAG_ERROR_CODE.getErrorCode(), localizer);
-        }
-    },
-    DUPLICATE_CERTIFICATE_HANDLER(Certificate.class, DuplicateEntityException.class) {
-        @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.CONFLICT,
-                    CERTIFICATE_ERROR_CODE.getErrorCode(), localizer);
-        }
-    },
-    INVALID_TAG_HANDLER(Tag.class, InvalidEntityException.class) {
-        @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(), HttpStatus.BAD_REQUEST,
-                    TAG_ERROR_CODE.getErrorCode(), localizer);
-        }
-    },
-    INVALID_CERTIFICATE_HANDLER(Certificate.class, InvalidEntityException.class) {
-        @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            String errorMessage = String.format(localizer.toLocale(INVALID_CERTIFICATE_MESSAGE),
-                    serviceException.getMessage());
-            return ErrorResponseCreator.createErrorResponse(errorMessage, HttpStatus.BAD_REQUEST,
-                    CERTIFICATE_ERROR_CODE.getErrorCode(), localizer);
-        }
-    },
-    INVALID_CERTIFICATES_SORT_PARAMETER_HANDLER(Certificate.class, InvalidSortParameterException.class) {
-        @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
-            return ErrorResponseCreator.createErrorResponse(serviceException.getMessage(),
-                    HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE.getErrorCode(), localizer);
-        }
-    },
-    STANDARD_HANDLER(BaseEntity.class, EntityException.class) {
-        @Override
-        ResponseEntity<ErrorResponse> handle(EntityException serviceException, Localizer localizer) {
+        ResponseEntity<ErrorResponse> handle(TypedServiceException typedServiceExceptionClass, Localizer localizer) {
             return ErrorResponseCreator.createErrorResponse(UNKNOWN_EXCEPTION_MESSAGE,
                     HttpStatus.BAD_REQUEST, DEFAULT_ERROR_CODE.getErrorCode(), localizer);
         }
@@ -86,28 +51,21 @@ public enum EntityExceptionHandler {
 
     private static final String UNKNOWN_EXCEPTION_MESSAGE = "unknown.exception";
     private static final String INVALID_CERTIFICATE_MESSAGE = "invalid.certificate";
-    private final Class<? extends BaseEntity> entityClass;
-    private final Class<? extends EntityException> serviceExceptionClass;
+    private final Class<? extends TypedServiceException> entityExceptionClass;
 
-    EntityExceptionHandler(Class<? extends BaseEntity> entityClass, Class<? extends EntityException> serviceExceptionClass) {
-        this.entityClass = entityClass;
-        this.serviceExceptionClass = serviceExceptionClass;
+    EntityExceptionHandler(Class<? extends TypedServiceException> entityExceptionClass) {
+        this.entityExceptionClass = entityExceptionClass;
     }
 
-    public Class<? extends BaseEntity> getEntityClass() {
-        return entityClass;
+    public Class<? extends TypedServiceException> getEntityExceptionClass() {
+        return entityExceptionClass;
     }
 
-    public Class<? extends EntityException> getServiceExceptionClass() {
-        return serviceExceptionClass;
-    }
+    abstract ResponseEntity<ErrorResponse> handle(TypedServiceException typedServiceException, Localizer localizer);
 
-    abstract ResponseEntity<ErrorResponse> handle(EntityException entityException, Localizer localizer);
-
-    public static EntityExceptionHandler findExceptionHandler(Class<? extends BaseEntity> entityClass, Class<? extends EntityException> serviceExceptionClass) {
+    public static EntityExceptionHandler findExceptionHandler(TypedServiceException typedServiceException) {
         return Arrays.stream(EntityExceptionHandler.values())
-                .filter(handler -> handler.getEntityClass().equals(entityClass)
-                        && handler.serviceExceptionClass.equals(serviceExceptionClass))
+                .filter(handler -> handler.entityExceptionClass.equals(typedServiceException.getClass()))
                 .findFirst()
                 .orElse(STANDARD_HANDLER);
     }

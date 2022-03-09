@@ -1,6 +1,6 @@
 package com.epam.esm.service.exception;
 
-public class NotEnoughMoneyException extends RuntimeException {
+public class NotEnoughMoneyException extends ServiceException {
     public NotEnoughMoneyException() {
     }
 

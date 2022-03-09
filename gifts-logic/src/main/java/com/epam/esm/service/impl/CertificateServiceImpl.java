@@ -1,14 +1,17 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDao;
+import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.CertificateDuplicationChecker;
 import com.epam.esm.service.collector.CertificateFullDataCollector;
-import com.epam.esm.service.exception.DuplicateEntityException;
+import com.epam.esm.service.exception.EntityDuplicationException;
+import com.epam.esm.service.exception.InvalidPaginationDataException;
 import com.epam.esm.service.exception.UnknownEntityException;
+import com.epam.esm.service.exception.MissingPageNumberException;
 import com.epam.esm.service.handler.CertificatesHandler;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,20 +25,30 @@ import java.util.stream.Collectors;
 @Service
 public class CertificateServiceImpl implements CertificateService {
     private static final String NONEXISTENT_CERTIFICATE_MESSAGE = "nonexistent.certificate";
+    private static final String MISSING_PAGE_NUMBER_MESSAGE = "missing.page.number";
     private static final String DUPLICATE_CERTIFICATE_MESSAGE = "duplicate.certificate";
+    private static final String UNKNOWN_TAGS_WAS_RECEIVED_MESSAGE = "unknown.tags.was.received";
+    private static final String INVALID_PAGE_OR_PAGE_SIZE_MESSAGE = "invalid.page.or.page.size";
+    private static final String PAGE_PARAMETER = "page";
+    private static final String PAGE_SIZE_PARAMETER = "pageSize";
+    private static final int DEFAULT_PAE_SIZE = 5;
     private final CertificateDao certificateDao;
+    private final TagDao tagDao;
     private final TagService tagService;
     private final CertificateValidator certificateValidator;
     private final CertificateDuplicationChecker certificateDuplicationChecker;
     private final CertificateFullDataCollector certificateFullDataCollector;
 
     @Autowired
-    public CertificateServiceImpl(CertificateDao certificateDao, TagService tagService, CertificateValidator certificateValidator, CertificateDuplicationChecker certificateDuplicationChecker, CertificateFullDataCollector certificateFullDataCollector) {
+    public CertificateServiceImpl(CertificateDao certificateDao, TagService tagService, CertificateValidator certificateValidator,
+                                  CertificateDuplicationChecker certificateDuplicationChecker,
+                                  CertificateFullDataCollector certificateFullDataCollector, TagDao tagDao) {
         this.certificateDao = certificateDao;
         this.tagService = tagService;
         this.certificateValidator = certificateValidator;
         this.certificateDuplicationChecker = certificateDuplicationChecker;
         this.certificateFullDataCollector = certificateFullDataCollector;
+        this.tagDao = tagDao;
     }
 
     @Override
@@ -46,7 +59,7 @@ public class CertificateServiceImpl implements CertificateService {
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)) {
-            throw new DuplicateEntityException(Certificate.class, DUPLICATE_CERTIFICATE_MESSAGE);
+            throw new EntityDuplicationException(Certificate.class, DUPLICATE_CERTIFICATE_MESSAGE);
         }
 
         Set<Tag> tags = certificate.getTags();
@@ -59,25 +72,17 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<Certificate> findAllCertificates(Map<String, String> handleParameters, List<String> tagNames) {
-        List<Certificate> certificates = certificateDao.findAll();
+        List<Certificate> certificates = findCertificatesWithPagination(handleParameters);
 
         if (tagNames != null && !tagNames.isEmpty()) {
-            List<Tag> tags = tagNames.stream()
-                    .map(tagService::findTagByName)
-                    .collect(Collectors.toList());
+            List<Tag> tags = convertTagNamesToTags(tagNames);
             certificates = certificates.stream()
                     .filter(certificate -> certificate.getTags().stream()
                             .anyMatch(tags::contains))
                     .collect(Collectors.toList());
         }
 
-        if (handleParameters != null && !handleParameters.isEmpty()) {
-            for (Map.Entry<String, String> parametersEntry : handleParameters.entrySet()) {
-                certificates = CertificatesHandler
-                        .findHandlerByName(parametersEntry.getKey())
-                        .handle(certificates, parametersEntry.getValue());
-            }
-        }
+        handleCertificates(certificates, handleParameters);
 
         return certificates;
     }
@@ -105,7 +110,7 @@ public class CertificateServiceImpl implements CertificateService {
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForUpdatingDuplication(certificate)) {
-            throw new DuplicateEntityException(Certificate.class, DUPLICATE_CERTIFICATE_MESSAGE);
+            throw new EntityDuplicationException(Certificate.class, DUPLICATE_CERTIFICATE_MESSAGE);
         }
 
         Set<Tag> tags = certificate.getTags();
@@ -140,6 +145,46 @@ public class CertificateServiceImpl implements CertificateService {
                 Tag currentTag = tagService.findTagByName(tag.getName());
                 certificateDao.addTagToCertificate(certificateId, currentTag.getId());
             });
+        }
+    }
+
+    private List<Certificate> findCertificatesWithPagination(Map<String, String> handleParameters) {
+        if (handleParameters == null || handleParameters.isEmpty() || !handleParameters.containsKey(PAGE_PARAMETER)) {
+            throw new MissingPageNumberException(MISSING_PAGE_NUMBER_MESSAGE);
+        }
+
+        int page = Integer.parseInt(handleParameters.remove(PAGE_PARAMETER));
+        int pageSize = handleParameters.containsKey(PAGE_SIZE_PARAMETER)
+                ? Integer.parseInt(handleParameters.remove(PAGE_SIZE_PARAMETER))
+                : DEFAULT_PAE_SIZE;
+
+        if (page <= 0 || pageSize <= 0) {
+            throw new InvalidPaginationDataException(INVALID_PAGE_OR_PAGE_SIZE_MESSAGE);
+        }
+
+        return certificateDao.findAll(page, pageSize);
+    }
+
+    private List<Tag> convertTagNamesToTags(List<String> tagNames) {
+        List<Tag> tags = tagNames.stream()
+                .map(tagDao::findByName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        if (tags.isEmpty()) {
+            throw new UnknownEntityException(Tag.class, UNKNOWN_TAGS_WAS_RECEIVED_MESSAGE);
+        }
+
+        return tags;
+    }
+
+    private void handleCertificates(List<Certificate> certificates, Map<String, String> handleParameters) {
+        if (!handleParameters.isEmpty()) {
+            for (Map.Entry<String, String> parametersEntry : handleParameters.entrySet()) {
+                certificates = CertificatesHandler
+                        .findHandlerByName(parametersEntry.getKey())
+                        .handle(certificates, parametersEntry.getValue());
+            }
         }
     }
 }

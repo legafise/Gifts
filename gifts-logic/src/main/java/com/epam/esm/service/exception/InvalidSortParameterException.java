@@ -1,14 +1,12 @@
 package com.epam.esm.service.exception;
 
-import com.epam.esm.entity.BaseEntity;
-
-public class InvalidSortParameterException extends EntityException {
+public class InvalidSortParameterException extends ServiceException {
     public InvalidSortParameterException() {
         super();
     }
 
-    public InvalidSortParameterException(Class<? extends BaseEntity> entityClass, String message) {
-        super(entityClass, message);
+    public InvalidSortParameterException(String message) {
+        super(message);
     }
 
     public InvalidSortParameterException(String message, Throwable cause) {

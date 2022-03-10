@@ -4,15 +4,18 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.checker.TagDuplicationChecker;
+import com.epam.esm.service.constant.PaginationConstant;
 import com.epam.esm.service.exception.EntityDuplicationException;
 import com.epam.esm.service.exception.InvalidEntityException;
 import com.epam.esm.service.exception.UnknownEntityException;
+import com.epam.esm.service.handler.PaginationParametersHandler;
 import com.epam.esm.service.validator.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,12 +26,15 @@ public class TagServiceImpl implements TagService {
     private final TagValidator tagValidator;
     private final TagDuplicationChecker tagDuplicationChecker;
     private final TagDao tagDao;
+    private final PaginationParametersHandler paginationParametersHandler;
 
     @Autowired
-    public TagServiceImpl(TagValidator tagValidator, TagDuplicationChecker tagDuplicationChecker, TagDao tagDao) {
+    public TagServiceImpl(TagValidator tagValidator, TagDuplicationChecker tagDuplicationChecker,
+                          TagDao tagDao, PaginationParametersHandler paginationParametersHandler) {
         this.tagValidator = tagValidator;
         this.tagDuplicationChecker = tagDuplicationChecker;
         this.tagDao = tagDao;
+        this.paginationParametersHandler = paginationParametersHandler;
     }
 
     @Override
@@ -47,8 +53,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findAllTags() {
-        return tagDao.findAll();
+    public List<Tag> findAllTags(Map<String, String> paginationParameters) {
+        Map<String, Integer> handledPaginationParameters = paginationParametersHandler.handlePaginationParameters(paginationParameters);
+
+        return tagDao.findAll(handledPaginationParameters.get(PaginationConstant.PAGE_PARAMETER),
+                handledPaginationParameters.get(PaginationConstant.PAGE_SIZE_PARAMETER));
     }
 
     @Override

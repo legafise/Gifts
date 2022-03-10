@@ -12,7 +12,7 @@ public interface TagDao {
 
     Optional<Tag> findByName(String name);
 
-    List<Tag> findAll();
+    List<Tag> findAll(int page, int pageSize);
 
     Tag update(Tag tag);
 

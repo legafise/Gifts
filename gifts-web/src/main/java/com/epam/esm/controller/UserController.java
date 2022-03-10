@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -28,8 +29,8 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<User> readAllUsers() {
-        return userService.findAllUsers();
+    public List<User> readAllUsers(@RequestParam Map<String, String> paginationParameters) {
+        return userService.findAllUsers(paginationParameters);
     }
 
     @GetMapping("/{userId}/orders")

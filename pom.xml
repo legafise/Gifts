@@ -23,10 +23,18 @@
         <spring.boot.version>2.6.3</spring.boot.version>
         <dbunit.version>2.5.3</dbunit.version>
         <hibernate.version>5.6.1.Final</hibernate.version>
+        <spring.hateoas.version>1.4.1</spring.hateoas.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.hateoas</groupId>
+                <artifactId>spring-hateoas</artifactId>
+                <version>${spring.hateoas.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>

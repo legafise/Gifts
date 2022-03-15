@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest(classes = TestApplication.class)
@@ -34,19 +35,19 @@ import java.util.Collections;
 //
 //        testCertificate = new Certificate(1, "Test", "Test certificate",
 //                new BigDecimal("100.00"), (short) 61, LocalDateTime.parse("2022-03-15T21:30"),
-//                LocalDateTime.parse("2022-06-15T21:30"), Collections.emptyList());
+//                LocalDateTime.parse("2022-06-15T21:30"), Collections.emptySet());
 //        firstTestCertificate = new Certificate(102, "Jump park", "Free jumps at trampolines",
 //                new BigDecimal("35.00"), (short) 30, LocalDateTime.parse("2022-03-15T21:30"),
-//                LocalDateTime.parse("2022-06-15T21:30"), Arrays.asList(firstTestTag, secondTestTag));
+//                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Arrays.asList(firstTestTag, secondTestTag)));
 //        secondTestCertificate = new Certificate(101, "TattooLand", "The certificate allows to you make a tattoo",
 //                new BigDecimal("125.00"), (short) 92, LocalDateTime.parse("2022-03-15T21:30"),
-//                LocalDateTime.parse("2022-06-15T21:30"), Collections.singletonList(secondTestTag));
+//                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Collections.singletonList(secondTestTag)));
 //    }
 //
-//    @Test
-//    void addCertificateTest() {
-//        Assertions.assertTrue(certificateDao.add(testCertificate));
-//    }
+////    @Test
+////    void addCertificateTest() {
+////        Assertions.assertTrue(certificateDao.add(testCertificate));
+////    }
 //
 //    @Test
 //    void findCertificateByIdTest() {
@@ -58,16 +59,16 @@ import java.util.Collections;
 //        Assertions.assertEquals(certificateDao.findByName("Jump park").get(), firstTestCertificate);
 //    }
 //
-//    @Test
-//    void updateTagTest() {
-//        secondTestCertificate.setName("Tattoo");
-//        Assertions.assertTrue(certificateDao.update(secondTestCertificate));
-//    }
-//
-//    @Test
-//    void removeTagTest() {
-//        Assertions.assertTrue(certificateDao.remove(103));
-//    }
+////    @Test
+////    void updateTagTest() {
+////        secondTestCertificate.setName("Tattoo");
+////        Assertions.assertTrue(certificateDao.update(secondTestCertificate));
+////    }
+////
+////    @Test
+////    void removeTagTest() {
+////        Assertions.assertTrue(certificateDao.remove(103));
+////    }
 //
 //    @Test
 //    void addTagToCertificateTest() {

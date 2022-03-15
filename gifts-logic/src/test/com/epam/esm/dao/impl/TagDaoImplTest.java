@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +29,7 @@ import java.util.List;
 //
 //    @BeforeEach
 //    void setUp() {
-//        firstTestTag = new Tag("Free");
+//        firstTestTag = new Tag(104,"Free");
 //        secondTestTag = new Tag(101, "Tattoo");
 //        thirdTestTag = new Tag(103, "Entertainment");
 //        tagList = Arrays.asList(secondTestTag, new Tag(102, "Jumps"), thirdTestTag, new Tag(104, "Swimming"));
@@ -35,12 +37,13 @@ import java.util.List;
 //
 //    @Test
 //    void findAllTagsTest() {
-//        Assertions.assertEquals(tagList, tagDao.findAll());
+//        Assertions.assertEquals(tagList, tagDao.findAll(1, 4));
 //    }
 //
 //    @Test
 //    void addTagTest() {
-//        Assertions.assertTrue(tagDao.add(firstTestTag));
+//        tagDao.add(firstTestTag);
+//        Assertions.assertTrue(tagDao.findById(firstTestTag.getId()).isPresent());
 //    }
 //
 //    @Test

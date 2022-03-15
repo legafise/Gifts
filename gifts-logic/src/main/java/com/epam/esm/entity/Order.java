@@ -12,11 +12,12 @@ import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity {
+    private BigDecimal price;
+    private LocalDateTime purchaseTime;
+
     @ManyToOne()
     @JoinColumn(name = "certificate_id")
     private Certificate certificate;
-    private BigDecimal price;
-    private LocalDateTime purchaseTime;
 
     public Order() {
     }
@@ -34,14 +35,6 @@ public class Order extends BaseEntity {
         this.purchaseTime = purchaseTime;
     }
 
-    public Certificate getCertificates() {
-        return certificate;
-    }
-
-    public void setCertificates(Certificate certificate) {
-        this.certificate = certificate;
-    }
-
     public BigDecimal getPrice() {
         return price;
     }
@@ -57,6 +50,14 @@ public class Order extends BaseEntity {
 
     public void setPurchaseTime(LocalDateTime purchaseTime) {
         this.purchaseTime = purchaseTime;
+    }
+
+    public void setCertificate(Certificate certificate) {
+        this.certificate = certificate;
+    }
+
+    public Certificate getCertificate() {
+        return certificate;
     }
 
     @Override

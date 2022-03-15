@@ -31,6 +31,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
+    @Transactional
     public void add(Tag tag) {
         tag.setId(0);
         entityManager.persist(tag);

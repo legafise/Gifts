@@ -28,6 +28,13 @@ public class User extends BaseEntity {
         this.orders = orders;
     }
 
+    public User(long id, String login, BigDecimal balance) {
+        super(id);
+        this.login = login;
+        this.balance = balance;
+        orders = new ArrayList<>();
+    }
+
     public String getLogin() {
         return login;
     }

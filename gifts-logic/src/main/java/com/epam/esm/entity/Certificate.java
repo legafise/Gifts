@@ -10,7 +10,7 @@ import java.util.*;
 import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
 
 @Entity
-@Table(name = "gift_certificate")
+@Table(name = "gift_certificates")
 public class Certificate extends BaseEntity {
     private String name;
     private String description;

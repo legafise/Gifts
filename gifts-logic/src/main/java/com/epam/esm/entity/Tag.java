@@ -1,9 +1,11 @@
 package com.epam.esm.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
+@Table(name = "tags")
 public class Tag extends BaseEntity {
     private String name;
 

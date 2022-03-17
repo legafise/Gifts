@@ -3,6 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.entity.User;
 import org.hibernate.Session;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserDaoImpl implements UserDao {
+@Profile({"prod", "test"})
+public class HibernateUserDao implements UserDao {
     private static final String ADD_ORDER_TO_USER_QUERY = "INSERT INTO user_orders (user_id, order_id) VALUES (?, ?)";
     private EntityManager entityManager;
 

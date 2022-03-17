@@ -137,6 +137,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     public void addCertificateTags(long certificateId, Set<Tag> tags) {
         if (!tags.isEmpty()) {
+            certificateDao.clearCertificateTags(certificateId);
             tags.forEach(tag -> {
                 tagService.addTagIfNotExists(tag);
                 Tag currentTag = tagService.findTagByName(tag.getName());

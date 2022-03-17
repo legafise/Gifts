@@ -2,8 +2,8 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TagDaoImpl implements TagDao {
+@Profile({"prod", "test"})
+public class HibernateTagDao implements TagDao {
     private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE tag_id = ?";
     private static final String FIND_WIDELY_USED_TAG = "SELECT tag_id FROM (SELECT tag.id AS tag_id, SUM(orders.price)" +
             " AS tag_orders_price FROM gifts.orders INNER JOIN gift_certificate ON orders.certificate_id = gift_certificate.id" +
@@ -31,7 +32,6 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    @Transactional
     public void add(Tag tag) {
         tag.setId(0);
         entityManager.persist(tag);
@@ -66,7 +66,6 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    @Transactional
     public Tag update(Tag tag) {
         return entityManager.merge(tag);
     }

@@ -2,6 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.OrderDao;
 import com.epam.esm.entity.Order;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -10,7 +11,8 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 @Repository
-public class OrderDaoImpl implements OrderDao {
+@Profile({"prod", "test"})
+public class HibernateOrderDao implements OrderDao {
     private static final String FIND_MAX_ORDER_ID = "SELECT MAX(id) FROM orders";
     private EntityManager entityManager;
 

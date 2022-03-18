@@ -21,7 +21,7 @@ import java.util.HashSet;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("test")
+@ActiveProfiles({"hibernate-test"})
 @Transactional
 class HibernateCertificateDaoTest {
     @Autowired
@@ -34,6 +34,7 @@ class HibernateCertificateDaoTest {
     void setUp() {
         Tag firstTestTag = new Tag(102, "Jumps");
         Tag secondTestTag = new Tag(103, "Entertainment");
+        Tag thirdTestTag = new Tag(101, "Tattoo");
 
         testCertificate = new Certificate(1, "Test", "Test certificate",
                 new BigDecimal("100.00"), (short) 61, LocalDateTime.parse("2022-03-15T21:30"),
@@ -43,14 +44,8 @@ class HibernateCertificateDaoTest {
                 LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Arrays.asList(firstTestTag, secondTestTag)));
         secondTestCertificate = new Certificate(101, "TattooLand", "The certificate allows to you make a tattoo",
                 new BigDecimal("125.00"), (short) 92, LocalDateTime.parse("2022-03-15T21:30"),
-                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Collections.singletonList(secondTestTag)));
+                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Collections.singletonList(thirdTestTag)));
     }
-
-//    @Test
-//    void addCertificateTest() {
-//        certificateDao.add(testCertificate);
-//        Assertions.assertTrue(certificateDao.findByName(testCertificate.getName()).isPresent());
-//    }
 
     @Test
     void findCertificateByIdTest() {

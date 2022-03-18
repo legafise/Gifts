@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Profile({"prod", "test"})
+@Profile({"prod", "hibernate-test"})
 public class HibernateUserDao implements UserDao {
     private static final String ADD_ORDER_TO_USER_QUERY = "INSERT INTO user_orders (user_id, order_id) VALUES (?, ?)";
     private EntityManager entityManager;

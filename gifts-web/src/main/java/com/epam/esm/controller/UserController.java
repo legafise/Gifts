@@ -19,6 +19,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/users")
 public class UserController {
     private static final String ORDER_INFO_MESSAGE = "Order(id = %d) info";
+    private static final String ORDERED_CERTIFICATE_INFO = "Ordered certificate(id = %d) info";
     private final UserService userService;
 
     @Autowired
@@ -46,8 +47,17 @@ public class UserController {
 
     @GetMapping("/{userId}/orders")
     @ResponseStatus(OK)
-    public List<Order> readAllUserOrders(@PathVariable long userId) {
-        return userService.findUserById(userId).getOrders();
+    public List<EntityModel<Order>> readAllUserOrders(@PathVariable long userId) {
+        List<Order> userOrders = userService.findUserById(userId).getOrders();
+        return userOrders.stream()
+                .map(EntityModel::of)
+                .peek(orderEntityModel -> {
+                    WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
+                            .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
+                    orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
+                            orderEntityModel.getContent().getCertificate().getId())));
+                })
+                .collect(Collectors.toList());
     }
 
     private EntityModel<User> createHateoasUserModel(User user) {

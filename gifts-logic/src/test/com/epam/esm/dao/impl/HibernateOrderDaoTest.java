@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("test")
+@ActiveProfiles("hibernate-test")
 @Transactional
 class HibernateOrderDaoTest {
     @Autowired

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Profile({"prod", "test"})
+@Profile({"prod", "hibernate-test"})
 public class HibernateTagDao implements TagDao {
     private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE tag_id = ?";
     private static final String FIND_WIDELY_USED_TAG = "SELECT tag_id FROM (SELECT tag.id AS tag_id, SUM(orders.price)" +

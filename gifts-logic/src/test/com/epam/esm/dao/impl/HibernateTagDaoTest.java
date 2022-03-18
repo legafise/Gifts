@@ -17,19 +17,18 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("test")
+@ActiveProfiles("hibernate-test")
 @Transactional
 class HibernateTagDaoTest {
     @Autowired
     private HibernateTagDao tagDao;
-    private Tag firstTestTag;
     private Tag secondTestTag;
     private Tag thirdTestTag;
     private List<Tag> tagList;
 
     @BeforeEach
     void setUp() {
-        firstTestTag = new Tag(105, "Free");
+        Tag firstTestTag = new Tag(105, "Free");
         secondTestTag = new Tag(101, "Tattoo");
         thirdTestTag = new Tag(103, "Entertainment");
         tagList = Arrays.asList(secondTestTag, new Tag(102, "Jumps"), thirdTestTag, new Tag(104, "Swimming"));
@@ -39,12 +38,6 @@ class HibernateTagDaoTest {
     void findAllTagsTest() {
         Assertions.assertEquals(tagList, tagDao.findAll(1, 4));
     }
-
-//    @Test
-//    void addTagTest() {
-//        tagDao.add(firstTestTag);
-//        Assertions.assertTrue(tagDao.findByName(firstTestTag.getName()).isPresent());
-//    }
 
     @Test
     void findByIdTest() {

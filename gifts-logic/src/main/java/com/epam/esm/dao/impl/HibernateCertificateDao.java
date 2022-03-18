@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Profile({"prod", "test"})
+@Profile({"prod", "hibernate-test"})
 public class HibernateCertificateDao implements CertificateDao {
     private static final String FIND_MAX_CERTIFICATE_ID = "SELECT MAX(id) FROM gift_certificates";
     private static final String ADD_TAG_TO_CERTIFICATE_SQL = "INSERT INTO gift_tags (certificate_id, tag_id) VALUES (?, ?)";

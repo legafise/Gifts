@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 @Repository
-@Profile({"prod", "test"})
+@Profile({"prod", "hibernate-test"})
 public class HibernateOrderDao implements OrderDao {
     private static final String FIND_MAX_ORDER_ID = "SELECT MAX(id) FROM orders";
     private EntityManager entityManager;

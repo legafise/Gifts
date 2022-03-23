@@ -28,10 +28,12 @@ public class OrderController {
     public EntityModel<Order> readOrder(@PathVariable long id) {
         Order readOrder = orderService.findOrderById(id);
         EntityModel<Order> orderEntityModel = EntityModel.of(readOrder);
-        WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
-                .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
-        orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
-                orderEntityModel.getContent().getCertificate().getId())));
+        if (!Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().isDeleted()) {
+            WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
+                    .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
+            orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
+                    orderEntityModel.getContent().getCertificate().getId())));
+        }
 
         return orderEntityModel;
     }

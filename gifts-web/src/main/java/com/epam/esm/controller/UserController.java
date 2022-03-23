@@ -52,10 +52,12 @@ public class UserController {
         return userOrders.stream()
                 .map(EntityModel::of)
                 .peek(orderEntityModel -> {
-                    WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
-                            .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
-                    orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
-                            orderEntityModel.getContent().getCertificate().getId())));
+                    if (!Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().isDeleted()) {
+                        WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
+                                .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
+                        orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
+                                orderEntityModel.getContent().getCertificate().getId())));
+                    }
                 })
                 .collect(Collectors.toList());
     }
@@ -68,7 +70,7 @@ public class UserController {
                             .methodOn(OrderController.class).readOrder(order.getId()));
                     userEntityModel.add(linkToOrder.withRel(String.format(ORDER_INFO_MESSAGE, order.getId())));
                 });
-        
+
         return userEntityModel;
     }
 }

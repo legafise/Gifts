@@ -17,18 +17,19 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles("hibernate-test")
+@ActiveProfiles("template-test")
 @Transactional
-class HibernateTagDaoTest {
+class JdbcTemplateTagDaoTest {
     @Autowired
-    private HibernateTagDao tagDao;
+    private JdbcTemplateTagDao tagDao;
+    private Tag firstTestTag;
     private Tag secondTestTag;
     private Tag thirdTestTag;
     private List<Tag> tagList;
 
     @BeforeEach
     void setUp() {
-        Tag firstTestTag = new Tag(105, "Free");
+        firstTestTag = new Tag(105, "Free");
         secondTestTag = new Tag(101, "Tattoo");
         thirdTestTag = new Tag(103, "Entertainment");
         tagList = Arrays.asList(secondTestTag, new Tag(102, "Jumps"), thirdTestTag, new Tag(104, "Swimming"));
@@ -45,13 +46,19 @@ class HibernateTagDaoTest {
     }
 
     @Test
+    void addTagTest() {
+        tagDao.add(firstTestTag);
+        Assertions.assertTrue(tagDao.findByName(firstTestTag.getName()).isPresent());
+    }
+
+    @Test
     void findWithInvalidIdTest() {
         Assertions.assertFalse(tagDao.findById(300).isPresent());
     }
 
     @Test
     void findByNameTest() {
-        Assertions.assertEquals(tagDao.findByName("Tattoo").get(), secondTestTag);
+        Assertions.assertEquals(tagDao.findByName("Entertainment").get(), thirdTestTag);
     }
 
     @Test
@@ -66,8 +73,13 @@ class HibernateTagDaoTest {
     }
 
     @Test
+    void findWidelyUsedTagId() {
+        Assertions.assertEquals(secondTestTag, tagDao.findWidelyUsedTag());
+    }
+
+    @Test
     void removeTagPositiveTest() {
-        tagDao.remove(101);
-        Assertions.assertFalse(tagDao.findById(101).isPresent());
+        tagDao.remove(104);
+        Assertions.assertFalse(tagDao.findById(104).isPresent());
     }
 }

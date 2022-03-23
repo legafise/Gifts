@@ -16,6 +16,7 @@ CREATE TABLE gift_certificates
     duration         smallint       NOT NULL,
     create_date      datetime       NOT NULL,
     last_update_date datetime       NOT NULL,
+    is_deleted       tinyint        NOT NULL,
     PRIMARY KEY (id)
 );
 

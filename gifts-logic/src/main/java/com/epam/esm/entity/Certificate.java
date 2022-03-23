@@ -18,6 +18,7 @@ public class Certificate extends BaseEntity {
     private short duration;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
+    private boolean isDeleted;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "gift_tags", joinColumns = @JoinColumn(name = "certificate_id"),
@@ -95,6 +96,14 @@ public class Certificate extends BaseEntity {
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     @Override

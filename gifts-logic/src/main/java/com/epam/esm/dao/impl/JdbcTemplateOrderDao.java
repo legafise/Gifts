@@ -2,12 +2,14 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.OrderDao;
 import com.epam.esm.dao.extractor.OrderExtractorImpl;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -16,7 +18,7 @@ import java.util.Optional;
 public class JdbcTemplateOrderDao implements OrderDao {
     private static final String FIND_ORDER_BY_ID_SQL = "SELECT orders.id AS order_id, orders.price AS order_price, orders.purchase_time, gift_certificates.id AS certificate_id," +
             " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
-            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date, tags.id AS" +
+            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.is_deleted, gift_certificates.last_update_date, tags.id AS" +
             " tag_id, tags.name AS tag_name FROM orders LEFT JOIN gift_certificates ON orders.certificate_id = gift_certificates.id" +
             " LEFT JOIN gift_tags ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON gift_tags.tag_id = tags.id WHERE orders.id = ?";
     private static final String ADD_ORDER_SQL = "INSERT INTO orders (certificate_id, price, purchase_time) VALUES (?, ?, ?)";
@@ -32,8 +34,10 @@ public class JdbcTemplateOrderDao implements OrderDao {
 
     @Override
     public Optional<Order> findById(long id) {
-        return Optional.ofNullable(Objects.requireNonNull(jdbcTemplate
-                .query(FIND_ORDER_BY_ID_SQL, orderExtractor, id)).get(0));
+        List<Order> orderList = jdbcTemplate.query(FIND_ORDER_BY_ID_SQL, orderExtractor, id);
+
+        return orderList == null || orderList.isEmpty() ? Optional.empty()
+                : Optional.of(orderList.get(0));
     }
 
     @Override

@@ -53,6 +53,7 @@ public class CertificateServiceImpl implements CertificateService {
     public Certificate addCertificate(Certificate certificate) {
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(LocalDateTime.now());
+        certificate.setDeleted(false);
 
         certificateValidator.validateCertificate(certificate);
         if (!certificateDuplicationChecker.checkCertificateForAddingDuplication(certificate)) {
@@ -70,6 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<Certificate> findAllCertificates(Map<String, String> handleParameters, List<String> tagNames) {
         List<Certificate> certificates = findCertificatesWithPagination(handleParameters);
+        certificates = removeDeletedCertificatesFromList(certificates);
 
         if (tagNames != null && !tagNames.isEmpty()) {
             List<Tag> tags = convertTagNamesToTags(tagNames);
@@ -87,7 +89,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public Certificate findCertificateById(long id) {
         Optional<Certificate> certificate = certificateDao.findById(id);
-        if (!certificate.isPresent()) {
+        if (!certificate.isPresent() || certificate.get().isDeleted()) {
             throw new UnknownEntityException(Certificate.class, NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
@@ -120,12 +122,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public void removeCertificateById(long id) {
-        if (!certificateDao.findById(id).isPresent()) {
+        Optional<Certificate> removingCertificate = certificateDao.findById(id);
+        if (!removingCertificate.isPresent() || removingCertificate.get().isDeleted()) {
             throw new UnknownEntityException(Certificate.class, NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
-        certificateDao.clearCertificateTags(id);
-        certificateDao.remove(id);
+        removingCertificate.get().setDeleted(true);
+        certificateDao.update(removingCertificate.get());
     }
 
     @Override
@@ -174,5 +177,11 @@ public class CertificateServiceImpl implements CertificateService {
                         .handle(certificates, parametersEntry.getValue());
             }
         }
+    }
+
+    private List<Certificate> removeDeletedCertificatesFromList(List<Certificate> certificates) {
+        return certificates.stream()
+                .filter(certificate -> !certificate.isDeleted())
+                .collect(Collectors.toList());
     }
 }

@@ -21,11 +21,11 @@ import java.util.HashSet;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@ActiveProfiles({"hibernate-test"})
+@ActiveProfiles({"template-test"})
 @Transactional
-class HibernateCertificateDaoTest {
+class JdbcTemplateCertificateDaoTest {
     @Autowired
-    private HibernateCertificateDao certificateDao;
+    private JdbcTemplateCertificateDao certificateDao;
     private Certificate testCertificate;
     private Certificate firstTestCertificate;
     private Certificate secondTestCertificate;
@@ -64,9 +64,12 @@ class HibernateCertificateDaoTest {
     }
 
     @Test
-    void removeTagTest() {
-        certificateDao.remove(103);
-        Assertions.assertFalse(certificateDao.findById(103).isPresent());
+    void removeCertificateTest() {
+        firstTestCertificate.setName("CertificateForRemoving");
+        certificateDao.add(firstTestCertificate);
+        long addedCertificateId = certificateDao.findByName(firstTestCertificate.getName()).get().getId();
+        certificateDao.remove(addedCertificateId);
+        Assertions.assertFalse(certificateDao.findById(addedCertificateId).isPresent());
     }
 
     @Test

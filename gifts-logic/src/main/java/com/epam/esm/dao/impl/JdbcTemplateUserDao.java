@@ -19,7 +19,7 @@ public class JdbcTemplateUserDao implements UserDao {
     private static final String FIND_ALL_USERS_SQL = "SELECT users.id AS user_id, users.login, users.balance, orders.id AS order_id, orders.price AS order_price, orders.purchase_time, gift_certificates.id AS certificate_id," +
             " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
             " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date, tags.id AS" +
-            " tag_id, tags.name AS tag_name FROM users LEFT JOIN user_orders ON users.id = user_orders.user_id" +
+            " tag_id, tags.name AS tag_name, gift_certificates.is_deleted FROM users LEFT JOIN user_orders ON users.id = user_orders.user_id" +
             " LEFT JOIN orders ON user_orders.order_id = orders.id LEFT JOIN gift_certificates ON orders.certificate_id = gift_certificates.id" +
             " LEFT JOIN gift_tags ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON gift_tags.tag_id = tags.id ORDER BY" +
             " users.id ASC LIMIT ? OFFSET ?";

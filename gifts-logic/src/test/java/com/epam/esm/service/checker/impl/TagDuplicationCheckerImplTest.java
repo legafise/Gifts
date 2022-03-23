@@ -21,8 +21,8 @@ class TagDuplicationCheckerImplTest {
     void setUp() {
         tagDao = mock(TagDao.class);
         tagDuplicationChecker = new TagDuplicationCheckerImpl(tagDao);
-        firstTestTag = new Tag(1, "Test");
-        secondTestTag = new Tag(2, "Test");
+        firstTestTag = new Tag(1, "TestTag1");
+        secondTestTag = new Tag(2, "TestTag2");
     }
 
     @Test

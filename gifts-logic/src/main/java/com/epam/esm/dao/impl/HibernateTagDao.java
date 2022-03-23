@@ -20,9 +20,9 @@ import java.util.Optional;
 @Profile({"prod", "hibernate-test"})
 public class HibernateTagDao implements TagDao {
     private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE tag_id = ?";
-    private static final String FIND_WIDELY_USED_TAG = "SELECT tag_id FROM (SELECT tag.id AS tag_id, SUM(orders.price)" +
-            " AS tag_orders_price FROM gifts.orders INNER JOIN gift_certificate ON orders.certificate_id = gift_certificate.id" +
-            " LEFT JOIN gift_tags ON gift_certificate.id = gift_tags.certificate_id LEFT JOIN tag ON tag.id = gift_tags.tag_id" +
+    private static final String FIND_WIDELY_USED_TAG = "SELECT tag_id FROM (SELECT tags.id AS tag_id, SUM(orders.price)" +
+            " AS tag_orders_price FROM orders INNER JOIN gift_certificates ON orders.certificate_id = gift_certificates.id" +
+            " LEFT JOIN gift_tags ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON tags.id = gift_tags.tag_id" +
             " GROUP BY tag_id ORDER BY tag_orders_price DESC LIMIT 1) A";
     private EntityManager entityManager;
 

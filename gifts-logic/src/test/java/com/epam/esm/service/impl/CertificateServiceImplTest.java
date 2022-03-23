@@ -34,6 +34,7 @@ class CertificateServiceImplTest {
     private TagService tagService;
     private TagDao tagDao;
     private Certificate firstTestCertificate;
+    private Certificate secondTestCertificate;
     private List<Certificate> certificates;
 
     @BeforeEach
@@ -54,10 +55,13 @@ class CertificateServiceImplTest {
 
         firstTestCertificate = new Certificate(2, "Jump park", "Free jumps for your health!",
                 new BigDecimal("30"), (short) 30, LocalDateTime.now(), LocalDateTime.now(), new HashSet<>(Arrays.asList(firstTestTag, thirdTestTag)));
-        Certificate secondTestCertificate = new Certificate(1, "Fly tube", "Free flying in air tube!",
+        secondTestCertificate = new Certificate(1, "Fly tube", "Free flying in air tube!",
                 new BigDecimal("70"), (short) 30, LocalDateTime.now(), LocalDateTime.now(), new HashSet<>(Arrays.asList(secondTestTag, thirdTestTag)));
+        Certificate thirdTestCertificate = new Certificate(666, "DeletedCertificate", "U cant read the certificate!",
+                new BigDecimal("666"), (short) 13, LocalDateTime.now(), LocalDateTime.now(), new HashSet<>(Arrays.asList(new Tag(666, "Satan"), new Tag(13, "Hell"))));
+        thirdTestCertificate.setDeleted(true);
 
-        certificates = Arrays.asList(firstTestCertificate, secondTestCertificate);
+        certificates = Arrays.asList(firstTestCertificate, secondTestCertificate, thirdTestCertificate);
     }
 
     @Test
@@ -97,15 +101,15 @@ class CertificateServiceImplTest {
 
     @Test
     void findAllCertificatesWithoutParametersTest() {
-        Map<String, String> paginationParameters = new HashMap<>();
+        Map<String, String> parameters = new HashMap<>();
 
         Map<String, Integer> handledPaginationParameters = new HashMap<>();
         handledPaginationParameters.put(PaginationConstant.PAGE_PARAMETER, 1);
         handledPaginationParameters.put(PaginationConstant.PAGE_SIZE_PARAMETER, 2);
 
         when(certificateDao.findAll(1, 2)).thenReturn(certificates);
-        when(paginationParametersHandler.handlePaginationParameters(paginationParameters)).thenReturn(handledPaginationParameters);
-        Assertions.assertEquals(certificateService.findAllCertificates(paginationParameters, new ArrayList<>()), certificates);
+        when(paginationParametersHandler.handlePaginationParameters(parameters)).thenReturn(handledPaginationParameters);
+        Assertions.assertEquals(certificateService.findAllCertificates(parameters, new ArrayList<>()), Arrays.asList(firstTestCertificate, secondTestCertificate));
     }
 
     @Test

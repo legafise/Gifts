@@ -26,6 +26,7 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
     private static final String DURATION = "duration";
     private static final String CREATE_DATE = "create_date";
     private static final String LAST_UPDATE_DATE = "last_update_date";
+    private static final String IS_DELETED = "is_deleted";
     private final TagMapperImpl tagMapper;
 
     @Autowired
@@ -101,6 +102,7 @@ public class CertificateExtractorImpl implements ResultSetExtractor<List<Certifi
         certificate.setDuration(resultSet.getShort(DURATION));
         certificate.setCreateDate(resultSet.getTimestamp(CREATE_DATE).toLocalDateTime());
         certificate.setLastUpdateDate(resultSet.getTimestamp(LAST_UPDATE_DATE).toLocalDateTime());
+        certificate.setDeleted(resultSet.getBoolean(IS_DELETED));
     }
 }
 

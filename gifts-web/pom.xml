@@ -37,7 +37,7 @@
 
         <dependency>
             <groupId>com.epam</groupId>
-            <artifactId>gifts-logic</artifactId>
+            <artifactId>gifts-facade</artifactId>
         </dependency>
     </dependencies>
 </project>

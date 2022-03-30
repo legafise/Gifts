@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.Order;
-import com.epam.esm.service.OrderService;
+import com.epam.esm.dto.OrderDto;
+import com.epam.esm.facade.MJCOrderFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -16,33 +16,31 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/orders")
 public class OrderController {
     private static final String ORDERED_CERTIFICATE_INFO = "Ordered certificate(id = %d) info";
-    private final OrderService orderService;
+    private final MJCOrderFacade orderFacade;
 
     @Autowired
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
+    public OrderController(MJCOrderFacade orderFacade) {
+        this.orderFacade = orderFacade;
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)
-    public EntityModel<Order> readOrder(@PathVariable long id) {
-        Order readOrder = orderService.findOrderById(id);
-        EntityModel<Order> orderEntityModel = EntityModel.of(readOrder);
-        if (!Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().isDeleted()) {
-            WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
-                    .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
-            orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
-                    orderEntityModel.getContent().getCertificate().getId())));
-        }
+    public EntityModel<OrderDto> readOrder(@PathVariable long id) {
+        OrderDto readOrder = orderFacade.findOrderById(id);
+        EntityModel<OrderDto> orderEntityModel = EntityModel.of(readOrder);
+        WebMvcLinkBuilder linkToOrderedCertificate = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CertificateController.class)
+                .readCertificateById(Objects.requireNonNull(orderEntityModel.getContent()).getCertificate().getId()));
+        orderEntityModel.add(linkToOrderedCertificate.withRel(String.format(ORDERED_CERTIFICATE_INFO,
+                orderEntityModel.getContent().getCertificate().getId())));
 
         return orderEntityModel;
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public EntityModel<Order> createOrder(@RequestParam long userId, @RequestParam long certificateId) {
-        Order createdOrder = orderService.createOrder(userId, certificateId);
-        EntityModel<Order> orderModel = EntityModel.of(createdOrder);
+    public EntityModel<OrderDto> createOrder(@RequestParam long userId, @RequestParam long certificateId) {
+        OrderDto createdOrder = orderFacade.createOrder(userId, certificateId);
+        EntityModel<OrderDto> orderModel = EntityModel.of(createdOrder);
         WebMvcLinkBuilder linkToCustomer = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
                 .readUserById(userId));
         WebMvcLinkBuilder linkToAllCustomerOrders = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)

@@ -1,7 +1,8 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.service.TagService;
+import com.epam.esm.facade.MJCTagFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,47 +14,47 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping("/tags")
 public class TagController {
-    private final TagService tagService;
+    private final MJCTagFacade tagFacade;
 
     @Autowired
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
+    public TagController(MJCTagFacade tagFacade) {
+        this.tagFacade = tagFacade;
     }
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<Tag> readAllTags(@RequestParam Map<String, String> paginationParameters) {
-        return tagService.findAllTags(paginationParameters);
+    public List<TagDto> readAllTags(@RequestParam Map<String, String> paginationParameters) {
+        return tagFacade.findAllTags(paginationParameters);
     }
 
     @GetMapping("/widely-used-tag")
     @ResponseStatus(OK)
-    public Tag readWidelyUsedTag() {
-        return tagService.findWidelyUsedTag();
+    public TagDto readWidelyUsedTag() {
+        return tagFacade.findWidelyUsedTag();
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Tag createTag(@RequestBody Tag tag) {
-        return tagService.addTag(tag);
+    public TagDto createTag(@RequestBody Tag tag) {
+        return tagFacade.addTag(tag);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)
-    public Tag readTag(@PathVariable long id) {
-        return tagService.findTagById(id);
+    public TagDto readTag(@PathVariable long id) {
+        return tagFacade.findTagById(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(OK)
-    public Tag updateTag(@RequestBody Tag tag, @PathVariable long id) {
+    public TagDto updateTag(@RequestBody Tag tag, @PathVariable long id) {
         tag.setId(id);
-        return tagService.updateTag(tag);
+        return tagFacade.updateTag(tag);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteTag(@PathVariable long id) {
-        tagService.removeTagById(id);
+        tagFacade.removeTagById(id);
     }
 }

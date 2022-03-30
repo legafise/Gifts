@@ -4,7 +4,7 @@ import com.epam.esm.converter.MJCConverter;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.facade.MJCTagFacade;
-import com.epam.esm.service.TagService;
+import com.epam.esm.service.MJCTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,13 +18,13 @@ public class MJCTagFacadeImpl implements MJCTagFacade {
     @Qualifier("mjcTagConverter")
     private MJCConverter<Tag, TagDto> tagConverter;
     @Autowired
-    private TagService tagService;
+    private MJCTagService tagService;
 
     public void setTagConverter(MJCConverter<Tag, TagDto> tagConverter) {
         this.tagConverter = tagConverter;
     }
 
-    public void setTagService(TagService tagService) {
+    public void setTagService(MJCTagService tagService) {
         this.tagService = tagService;
     }
 

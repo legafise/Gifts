@@ -4,7 +4,7 @@ import com.epam.esm.converter.MJCConverter;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.entity.Order;
 import com.epam.esm.facade.MJCOrderFacade;
-import com.epam.esm.service.OrderService;
+import com.epam.esm.service.MJCOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -15,13 +15,13 @@ public class MJCOrderFacadeImpl implements MJCOrderFacade {
     @Qualifier("mjcOrderConverter")
     private MJCConverter<Order, OrderDto> orderConverter;
     @Autowired
-    private OrderService orderService;
+    private MJCOrderService orderService;
 
     public void setOrderConverter(MJCConverter<Order, OrderDto> orderConverter) {
         this.orderConverter = orderConverter;
     }
 
-    public void setOrderService(OrderService orderService) {
+    public void setOrderService(MJCOrderService orderService) {
         this.orderService = orderService;
     }
 

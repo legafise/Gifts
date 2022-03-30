@@ -4,7 +4,7 @@ import com.epam.esm.converter.MJCConverter;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.facade.MJCCertificateFacade;
-import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.MJCCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,9 @@ public class MJCCertificateFacadeImpl implements MJCCertificateFacade {
     @Qualifier("mjcCertificateConverter")
     private MJCConverter<Certificate, CertificateDto> certificateConverter;
     @Autowired
-    private CertificateService certificateService;
+    private MJCCertificateService certificateService;
 
-    public void setCertificateService(CertificateService certificateService) {
+    public void setCertificateService(MJCCertificateService certificateService) {
         this.certificateService = certificateService;
     }
 

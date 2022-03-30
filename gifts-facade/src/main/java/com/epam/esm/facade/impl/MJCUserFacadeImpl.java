@@ -4,7 +4,7 @@ import com.epam.esm.converter.MJCConverter;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.entity.User;
 import com.epam.esm.facade.MJCUserFacade;
-import com.epam.esm.service.UserService;
+import com.epam.esm.service.MJCUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,13 +18,13 @@ public class MJCUserFacadeImpl implements MJCUserFacade {
     @Qualifier("mjcUserConverter")
     private MJCConverter<User, UserDto> userConvertor;
     @Autowired
-    private UserService userService;
+    private MJCUserService userService;
 
     public void setUserConvertor(MJCConverter<User, UserDto> userConvertor) {
         this.userConvertor = userConvertor;
     }
 
-    public void setUserService(UserService userService) {
+    public void setUserService(MJCUserService userService) {
         this.userService = userService;
     }
 

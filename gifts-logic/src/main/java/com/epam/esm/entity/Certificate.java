@@ -1,13 +1,11 @@
 package com.epam.esm.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
-
-import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "gift_certificates")
@@ -39,6 +37,8 @@ public class Certificate extends BaseEntity {
         this.lastUpdateDate = lastUpdateDate;
         this.tags = tags;
     }
+
+    // TODO: 28.03.2022 dto  :(
 
     public String getName() {
         return name;
@@ -80,7 +80,6 @@ public class Certificate extends BaseEntity {
         this.tags = tags;
     }
 
-    @JsonFormat(pattern = DATE_FORMAT_PATTERN)
     public LocalDateTime getCreateDate() {
         return createDate;
     }
@@ -89,7 +88,6 @@ public class Certificate extends BaseEntity {
         this.createDate = createDate;
     }
 
-    @JsonFormat(pattern = DATE_FORMAT_PATTERN)
     public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }

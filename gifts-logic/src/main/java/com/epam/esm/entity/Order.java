@@ -1,13 +1,12 @@
 package com.epam.esm.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static com.epam.esm.entity.EntityConstant.DATE_FORMAT_PATTERN;
 
 @Entity
 @Table(name = "orders")
@@ -29,6 +28,8 @@ public class Order extends BaseEntity {
         this.purchaseTime = purchaseTime;
     }
 
+    // TODO: 29.03.2022 сделать тесто ордер и тест сертификат сущности
+
     public Order(Certificate certificate, BigDecimal price, LocalDateTime purchaseTime) {
         this.certificate = certificate;
         this.price = price;
@@ -43,7 +44,6 @@ public class Order extends BaseEntity {
         this.price = price;
     }
 
-    @JsonFormat(pattern = DATE_FORMAT_PATTERN)
     public LocalDateTime getPurchaseTime() {
         return purchaseTime;
     }

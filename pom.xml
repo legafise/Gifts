@@ -12,6 +12,7 @@
     <modules>
         <module>gifts-logic</module>
         <module>gifts-web</module>
+        <module>gifts-facade</module>
     </modules>
 
     <properties>
@@ -70,6 +71,12 @@
             <dependency>
                 <groupId>com.epam</groupId>
                 <artifactId>gifts-logic</artifactId>
+                <version>${gifts.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.epam</groupId>
+                <artifactId>gifts-facade</artifactId>
                 <version>${gifts.version}</version>
             </dependency>
 

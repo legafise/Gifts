@@ -1,7 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.MJCCertificateDao;
-import com.epam.esm.dao.extractor.MJCCertificateExtractorImpl;
+import com.epam.esm.dao.mapper.MJCCertificateMapperImpl;
 import com.epam.esm.entity.Certificate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -25,27 +25,23 @@ public class JdbcTemplateMJCCertificateDao implements MJCCertificateDao {
     private static final String REMOVE_CERTIFICATE_BY_ID_SQL = "DELETE FROM gift_certificates WHERE id = ?";
     private static final String FIND_CERTIFICATE_BY_ID_SQL = "SELECT gift_certificates.id AS certificate_id," +
             " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
-            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date, tags.id AS" +
-            " tag_id, tags.name AS tag_name, gift_certificates.is_deleted FROM gift_certificates LEFT JOIN gift_tags" +
-            " ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON gift_tags.tag_id = tags.id WHERE gift_certificates.id = ?";
+            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date," +
+            " gift_certificates.is_deleted FROM gift_certificates WHERE gift_certificates.id = ?";
     private static final String FIND_CERTIFICATE_BY_NAME_SQL = "SELECT gift_certificates.id AS certificate_id," +
             " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
-            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date, tags.id AS" +
-            " tag_id, tags.name AS tag_name, gift_certificates.is_deleted FROM gift_certificates LEFT JOIN gift_tags" +
-            " ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON gift_tags.tag_id = tags.id WHERE gift_certificates.name = ?";
+            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date," +
+            " gift_certificates.is_deleted FROM gift_certificates WHERE gift_certificates.name = ?";
     private static final String FIND_ALL_CERTIFICATES_SQL = "SELECT gift_certificates.id AS certificate_id," +
             " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
-            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date, tags.id AS" +
-            " tag_id, tags.name AS tag_name, gift_certificates.is_deleted FROM gift_certificates LEFT JOIN gift_tags" +
-            " ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON gift_tags.tag_id = tags.id ORDER BY" +
-            " gift_certificates.id ASC LIMIT ? OFFSET ?";
+            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.last_update_date," +
+            " gift_certificates.is_deleted FROM gift_certificates ORDER BY gift_certificates.id ASC LIMIT ? OFFSET ?";
     private static final String FIND_MAX_CERTIFICATE_ID = "SELECT MAX(id) FROM gift_certificates";
-    private final MJCCertificateExtractorImpl certificateExtractor;
+    private final MJCCertificateMapperImpl certificateMapper;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JdbcTemplateMJCCertificateDao(MJCCertificateExtractorImpl certificateExtractor, JdbcTemplate jdbcTemplate) {
-        this.certificateExtractor = certificateExtractor;
+    public JdbcTemplateMJCCertificateDao(MJCCertificateMapperImpl certificateMapper, JdbcTemplate jdbcTemplate) {
+        this.certificateMapper = certificateMapper;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -58,15 +54,15 @@ public class JdbcTemplateMJCCertificateDao implements MJCCertificateDao {
 
     @Override
     public Optional<Certificate> findById(long id) {
-        List<Certificate> certificateList = jdbcTemplate.query(FIND_CERTIFICATE_BY_ID_SQL, certificateExtractor, id);
+        List<Certificate> certificateList = jdbcTemplate.query(FIND_CERTIFICATE_BY_ID_SQL, certificateMapper, id);
 
-        return certificateList == null || certificateList.isEmpty() ? Optional.empty()
+        return certificateList.isEmpty() ? Optional.empty()
                 : Optional.of(certificateList.get(0));
     }
 
     @Override
     public List<Certificate> findAll(int page, int pageSize) {
-        return jdbcTemplate.query(FIND_ALL_CERTIFICATES_SQL, new Object[]{pageSize, (page - 1) * pageSize}, certificateExtractor);
+        return jdbcTemplate.query(FIND_ALL_CERTIFICATES_SQL, new Object[]{pageSize, (page - 1) * pageSize}, certificateMapper);
     }
 
     @Override
@@ -75,7 +71,7 @@ public class JdbcTemplateMJCCertificateDao implements MJCCertificateDao {
                 certificate.getPrice(), certificate.getDuration(), certificate.getCreateDate(),
                 certificate.getLastUpdateDate(), certificate.isDeleted(), certificate.getId());
         return Objects.requireNonNull(jdbcTemplate
-                .query(FIND_CERTIFICATE_BY_ID_SQL, certificateExtractor, certificate.getId())).get(0);
+                .query(FIND_CERTIFICATE_BY_ID_SQL, certificateMapper, certificate.getId())).get(0);
     }
 
     @Override
@@ -95,9 +91,9 @@ public class JdbcTemplateMJCCertificateDao implements MJCCertificateDao {
 
     @Override
     public Optional<Certificate> findByName(String name) {
-        List<Certificate> certificateList = jdbcTemplate.query(FIND_CERTIFICATE_BY_NAME_SQL, certificateExtractor, name);
+        List<Certificate> certificateList = jdbcTemplate.query(FIND_CERTIFICATE_BY_NAME_SQL, certificateMapper, name);
 
-        return certificateList == null || certificateList.isEmpty() ? Optional.empty()
+        return certificateList.isEmpty() ? Optional.empty()
                 : Optional.of(certificateList.get(0));
     }
 

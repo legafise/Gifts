@@ -9,4 +9,6 @@ public interface MJCUserService {
     User findUserById(long id);
 
     List<User> findAllUsers(Map<String, String> paginationParameters);
+
+    User findUserByOrderId(long orderId);
 }

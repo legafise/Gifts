@@ -4,6 +4,7 @@ import com.epam.esm.entity.Tag;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface MJCTagDao {
     void add(Tag tag);
@@ -21,4 +22,6 @@ public interface MJCTagDao {
     void removeTagFromCertificates(long id);
 
     Tag findWidelyUsedTag();
+
+    List<Tag> findTagsByCertificateId(long certificateId);
 }

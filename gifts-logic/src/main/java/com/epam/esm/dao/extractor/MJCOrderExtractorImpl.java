@@ -1,5 +1,6 @@
 package com.epam.esm.dao.extractor;
 
+import com.epam.esm.dao.mapper.MJCCertificateMapperImpl;
 import com.epam.esm.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -18,11 +19,11 @@ public class MJCOrderExtractorImpl implements ResultSetExtractor<List<Order>> {
     private static final String ORDER_PRICE = "order_price";
     private static final String PURCHASE_TIME = "purchase_time";
     private static final String ORDER_ID = "order_id";
-    private final MJCCertificateExtractorImpl certificateExtractor;
+    private final MJCCertificateMapperImpl certificateMapper;
 
     @Autowired
-    public MJCOrderExtractorImpl(MJCCertificateExtractorImpl certificateExtractor) {
-        this.certificateExtractor = certificateExtractor;
+    public MJCOrderExtractorImpl(MJCCertificateMapperImpl certificateMapper) {
+        this.certificateMapper = certificateMapper;
     }
 
     @Override
@@ -32,23 +33,12 @@ public class MJCOrderExtractorImpl implements ResultSetExtractor<List<Order>> {
         while (resultSet.next()) {
             Order order = new Order();
             fillMainOrderData(order, resultSet);
-            resultSet.previous();
-            order.setCertificate(certificateExtractor.extractData(resultSet).get(0));
+            order.setCertificate(certificateMapper.mapRow(resultSet, 1));
 
             orderList.add(order);
         }
 
         return orderList;
-    }
-
-    public Order extractUserOrder(ResultSet resultSet, long mappingOrderId) throws SQLException {
-        Order order = new Order();
-        if (resultSet.getBigDecimal(ORDER_PRICE) != null) {
-            fillMainOrderData(order, resultSet);
-            order.setCertificate(certificateExtractor.extractUserOrderCertificate(resultSet, mappingOrderId));
-        }
-
-        return order;
     }
 
     private void fillMainOrderData(Order order, ResultSet resultSet) throws SQLException {

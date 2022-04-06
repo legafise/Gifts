@@ -19,6 +19,7 @@ public class MJCTagMapperImpl implements RowMapper<Tag> {
         Tag tag = new Tag();
         tag.setId(rs.getLong(TAG_ID));
         tag.setName(rs.getString(TAG_NAME));
+
         return tag;
     }
 }

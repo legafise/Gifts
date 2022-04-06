@@ -2,12 +2,14 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.MJCOrderDao;
 import com.epam.esm.entity.Order;
+import com.epam.esm.entity.User;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -36,5 +38,10 @@ public class HibernateMJCOrderDao implements MJCOrderDao {
     public long findMaxOrderId() {
         BigInteger maxOrderId = (BigInteger) entityManager.createNativeQuery(FIND_MAX_ORDER_ID).getResultList().get(0);
         return maxOrderId.longValue();
+    }
+
+    @Override
+    public List<Order> findOrdersByUserId(long userId) {
+        return entityManager.find(User.class, userId).getOrders();
     }
 }

@@ -16,9 +16,12 @@ import java.util.Optional;
 public class JdbcTemplateMJCOrderDao implements MJCOrderDao {
     private static final String FIND_ORDER_BY_ID_SQL = "SELECT orders.id AS order_id, orders.price AS order_price, orders.purchase_time, gift_certificates.id AS certificate_id," +
             " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
-            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.is_deleted, gift_certificates.last_update_date, tags.id AS" +
-            " tag_id, tags.name AS tag_name FROM orders LEFT JOIN gift_certificates ON orders.certificate_id = gift_certificates.id" +
-            " LEFT JOIN gift_tags ON gift_certificates.id = gift_tags.certificate_id LEFT JOIN tags ON gift_tags.tag_id = tags.id WHERE orders.id = ?";
+            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.is_deleted, gift_certificates.last_update_date FROM orders LEFT JOIN gift_certificates ON orders.certificate_id = gift_certificates.id WHERE orders.id = ?";
+    private static final String FIND_ORDERS_BY_USER_ID_SQL = "SELECT orders.id AS order_id, orders.price AS order_price, orders.purchase_time, gift_certificates.id AS certificate_id," +
+            " gift_certificates.name AS gift_certificate_name, gift_certificates.description, gift_certificates.price AS certificate_price," +
+            " gift_certificates.duration, gift_certificates.create_date, gift_certificates.is_deleted," +
+            " gift_certificates.last_update_date FROM user_orders INNER JOIN orders ON user_orders.order_id = orders.id LEFT JOIN" +
+            " gift_certificates ON orders.certificate_id = gift_certificates.id WHERE user_orders.user_id = ?";
     private static final String ADD_ORDER_SQL = "INSERT INTO orders (certificate_id, price, purchase_time) VALUES (?, ?, ?)";
     private static final String FIND_MAX_ORDER_ID = "SELECT MAX(id) FROM orders";
     private final MJCOrderExtractorImpl orderExtractor;
@@ -46,5 +49,10 @@ public class JdbcTemplateMJCOrderDao implements MJCOrderDao {
     @Override
     public long findMaxOrderId() {
         return jdbcTemplate.queryForObject(FIND_MAX_ORDER_ID, Long.class);
+    }
+
+    @Override
+    public List<Order> findOrdersByUserId(long userId) {
+        return jdbcTemplate.query(FIND_ORDERS_BY_USER_ID_SQL, orderExtractor, userId);
     }
 }

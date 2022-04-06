@@ -72,6 +72,7 @@ public class MJCCertificateServiceImpl implements MJCCertificateService {
     public List<Certificate> findAllCertificates(Map<String, String> handleParameters, List<String> tagNames) {
         List<Certificate> certificates = findCertificatesWithPagination(handleParameters);
         certificates = removeDeletedCertificatesFromList(certificates);
+        certificates.forEach(this::findCertificateTagsIfNone);
 
         if (tagNames != null && !tagNames.isEmpty()) {
             List<Tag> tags = convertTagNamesToTags(tagNames);
@@ -88,12 +89,14 @@ public class MJCCertificateServiceImpl implements MJCCertificateService {
 
     @Override
     public Certificate findCertificateById(long id) {
-        Optional<Certificate> certificate = certificateDao.findById(id);
-        if (!certificate.isPresent() || certificate.get().isDeleted()) {
+        Optional<Certificate> certificateOptional = certificateDao.findById(id);
+        if (!certificateOptional.isPresent() || certificateOptional.get().isDeleted()) {
             throw new MJCUnknownEntityException(Certificate.class, NONEXISTENT_CERTIFICATE_MESSAGE);
         }
 
-        return certificate.get();
+        Certificate certificate = certificateOptional.get();
+        findCertificateTagsIfNone(certificate);
+        return certificate;
     }
 
     @Override
@@ -183,5 +186,11 @@ public class MJCCertificateServiceImpl implements MJCCertificateService {
         return certificates.stream()
                 .filter(certificate -> !certificate.isDeleted())
                 .collect(Collectors.toList());
+    }
+
+    private void findCertificateTagsIfNone(Certificate certificate) {
+        if (certificate.getTags().isEmpty()) {
+            certificate.setTags(new HashSet<>(tagDao.findTagsByCertificateId(certificate.getId())));
+        }
     }
 }

@@ -13,4 +13,6 @@ public interface MJCUserDao {
     User update(User user);
 
     boolean addOrderToUser(long userId, long orderId);
+
+    Optional<User> findByOrderId(long orderId);
 }

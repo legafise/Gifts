@@ -38,8 +38,6 @@ public class Certificate extends BaseEntity {
         this.tags = tags;
     }
 
-    // TODO: 28.03.2022 dto  :(
-
     public String getName() {
         return name;
     }

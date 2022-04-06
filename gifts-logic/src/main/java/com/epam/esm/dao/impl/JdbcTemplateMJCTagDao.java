@@ -17,6 +17,8 @@ public class JdbcTemplateMJCTagDao implements MJCTagDao {
     private static final String ADD_TAG_SQL = "INSERT INTO tags (name) VALUES (?)";
     private static final String FIND_TAG_BY_ID_SQL = "SELECT tags.id AS tag_id, tags.name AS tag_name FROM tags WHERE tags.id = ?";
     private static final String FIND_TAG_BY_NAME_SQL = "SELECT tags.id AS tag_id, tags.name AS tag_name FROM tags WHERE tags.name = ?";
+    private static final String FIND_TAGS_BY_CERTIFICATE_ID_SQL = "SELECT tags.id AS tag_id, tags.name AS tag_name FROM" +
+            " tags INNER JOIN gift_tags ON tags.id = gift_tags.tag_id WHERE gift_tags.certificate_id = ?";
     private static final String FIND_ALL_TAGS_SQL = "SELECT tags.id AS tag_id, tags.name AS tag_name FROM tags ORDER BY tags.id ASC LIMIT ? OFFSET ?";
     private static final String REMOVE_TAG_BY_ID_SQL = "DELETE FROM tags WHERE id = ?";
     private static final String REMOVE_TAG_FROM_CERTIFICATES_BY_ID_SQL = "DELETE FROM gift_tags WHERE gift_tags.tag_id = ?";
@@ -80,5 +82,10 @@ public class JdbcTemplateMJCTagDao implements MJCTagDao {
     public Tag findWidelyUsedTag() {
         long widelyUsedTagId = jdbcTemplate.queryForObject(FIND_WIDELY_USED_TAG, Long.class);
         return jdbcTemplate.queryForObject(FIND_TAG_BY_ID_SQL, new Object[]{widelyUsedTagId}, tagMapper);
+    }
+
+    @Override
+    public List<Tag> findTagsByCertificateId(long certificateId) {
+        return jdbcTemplate.query(FIND_TAGS_BY_CERTIFICATE_ID_SQL, tagMapper, certificateId);
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.MJCUserDao;
+import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import org.hibernate.Session;
 import org.springframework.context.annotation.Profile;
@@ -12,7 +13,9 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,5 +61,17 @@ public class HibernateMJCUserDao implements MJCUserDao {
         addOrderToUserQuery.setParameter(2, orderId);
 
         return addOrderToUserQuery.executeUpdate() >= 1;
+    }
+
+    @Override
+    public Optional<User> findByOrderId(long orderId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> userCriteria = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = userCriteria.from(User.class);
+        Join<User, Order> userOrderJoin = userRoot.join("orders");
+        userCriteria.select(userRoot);
+        userCriteria.where(criteriaBuilder.equal(userOrderJoin.get("id"), orderId));
+        return Optional.ofNullable(entityManager.createQuery(userCriteria)
+                .getResultList().get(0));
     }
 }

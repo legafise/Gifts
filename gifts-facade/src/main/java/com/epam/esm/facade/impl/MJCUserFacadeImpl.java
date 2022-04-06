@@ -37,4 +37,9 @@ public class MJCUserFacadeImpl implements MJCUserFacade {
     public List<UserDto> findAllUsers(Map<String, String> paginationParameters) {
         return userConvertor.convertAll(userService.findAllUsers(paginationParameters));
     }
+
+    @Override
+    public UserDto findUserByOrderId(long orderId) {
+        return userConvertor.convert(userService.findUserByOrderId(orderId));
+    }
 }

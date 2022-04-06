@@ -1,7 +1,9 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.MJCTagDao;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import org.hibernate.Session;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,5 +90,18 @@ public class HibernateMJCTagDao implements MJCTagDao {
     public Tag findWidelyUsedTag() {
         BigInteger widelyUsedTagId = (BigInteger) entityManager.createNativeQuery(FIND_WIDELY_USED_TAG).getResultList().get(0);
         return entityManager.find(Tag.class, widelyUsedTagId.longValue());
+    }
+
+    @Override
+    public List<Tag> findTagsByCertificateId(long certificateId) {
+        Session session = entityManager.unwrap(Session.class);
+        Certificate findingCertificate = entityManager.find(Certificate.class, certificateId);
+        if (findingCertificate != null && session.contains(findingCertificate)) {
+            entityManager.unwrap(Session.class).evict(findingCertificate);
+        }
+
+        Optional<Certificate> certificateOptional = Optional.ofNullable(entityManager.find(Certificate.class, certificateId));
+        return certificateOptional.map(certificate -> new ArrayList<>(certificate.getTags()))
+                .orElseGet(ArrayList::new);
     }
 }

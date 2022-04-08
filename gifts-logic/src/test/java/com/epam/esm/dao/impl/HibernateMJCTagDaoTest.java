@@ -22,13 +22,14 @@ import java.util.List;
 class HibernateMJCTagDaoTest {
     @Autowired
     private HibernateMJCTagDao tagDao;
+    private Tag firstTestTag;
     private Tag secondTestTag;
     private Tag thirdTestTag;
     private List<Tag> tagList;
 
     @BeforeEach
     void setUp() {
-        Tag firstTestTag = new Tag(105, "Free");
+        firstTestTag = new Tag(105, "Free");
         secondTestTag = new Tag(101, "Tattoo");
         thirdTestTag = new Tag(103, "Entertainment");
         tagList = Arrays.asList(secondTestTag, new Tag(102, "Jumps"), thirdTestTag, new Tag(104, "Swimming"));

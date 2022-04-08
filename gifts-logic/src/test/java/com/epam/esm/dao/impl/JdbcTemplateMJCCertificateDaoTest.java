@@ -32,24 +32,31 @@ class JdbcTemplateMJCCertificateDaoTest {
 
     @BeforeEach
     void setUp() {
-        Tag firstTestTag = new Tag(102, "Jumps");
-        Tag secondTestTag = new Tag(103, "Entertainment");
-        Tag thirdTestTag = new Tag(101, "Tattoo");
-
         testCertificate = new Certificate(1, "Test", "Test certificate",
                 new BigDecimal("100.00"), (short) 61, LocalDateTime.parse("2022-03-15T21:30"),
                 LocalDateTime.parse("2022-06-15T21:30"), Collections.emptySet());
         firstTestCertificate = new Certificate(102, "Jump park", "Free jumps at trampolines",
                 new BigDecimal("35.00"), (short) 30, LocalDateTime.parse("2022-03-15T21:30"),
-                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Arrays.asList(firstTestTag, secondTestTag)));
+                LocalDateTime.parse("2022-06-15T21:30"), Collections.emptySet());
         secondTestCertificate = new Certificate(101, "TattooLand", "The certificate allows to you make a tattoo",
-                new BigDecimal("125.00"), (short) 92, LocalDateTime.parse("2022-03-15T21:30"),
-                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Collections.singletonList(thirdTestTag)));
+                new BigDecimal("125.00"), (short) 92, LocalDateTime.parse("2022-01-20T21:00"),
+                LocalDateTime.parse("2022-04-20T21:00"), Collections.emptySet());
+    }
+
+    @Test
+    void addCertificateTest() {
+        certificateDao.add(testCertificate);
+        Assertions.assertEquals(testCertificate, certificateDao.findByName(testCertificate.getName()).get());
     }
 
     @Test
     void findCertificateByIdTest() {
         Assertions.assertEquals(certificateDao.findById(102).get(), firstTestCertificate);
+    }
+
+    @Test
+    void findAllCertificatesTest() {
+        Assertions.assertEquals(Arrays.asList(secondTestCertificate, firstTestCertificate), certificateDao.findAll(1, 2));
     }
 
     @Test

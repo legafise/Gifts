@@ -38,7 +38,7 @@ class HibernateMJCCertificateDaoTest {
 
         testCertificate = new Certificate(1, "Test", "Test certificate",
                 new BigDecimal("100.00"), (short) 61, LocalDateTime.parse("2022-03-15T21:30"),
-                LocalDateTime.parse("2022-06-15T21:30"), Collections.emptySet());
+                LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>());
         firstTestCertificate = new Certificate(102, "Jump park", "Free jumps at trampolines",
                 new BigDecimal("35.00"), (short) 30, LocalDateTime.parse("2022-03-15T21:30"),
                 LocalDateTime.parse("2022-06-15T21:30"), new HashSet<>(Arrays.asList(firstTestTag, secondTestTag)));
@@ -50,6 +50,12 @@ class HibernateMJCCertificateDaoTest {
     @Test
     void findCertificateByIdTest() {
         Assertions.assertEquals(certificateDao.findById(102).get(), firstTestCertificate);
+    }
+
+    @Test
+    void addCertificateTest() {
+        certificateDao.add(testCertificate);
+        Assertions.assertEquals(testCertificate, certificateDao.findByName(testCertificate.getName()).get());
     }
 
     @Test

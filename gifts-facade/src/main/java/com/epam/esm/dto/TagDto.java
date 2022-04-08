@@ -22,6 +22,14 @@ public class TagDto {
         this.name = name;
     }
 
+    public TagDto(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public TagDto() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

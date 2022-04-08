@@ -51,4 +51,14 @@ class HibernateMJCOrderDaoTest {
     void findMaxOrderIdTest() {
         Assertions.assertEquals(103, orderDao.findMaxOrderId());
     }
+
+    @Test
+    void findOrdersByUserIdTest() {
+        Assertions.assertEquals(Collections.singletonList(testOrder), orderDao.findOrdersByUserId(101));
+    }
+
+    @Test
+    void findOrdersByUserIdWhenUserDoesNotHaveOrdersTest() {
+        Assertions.assertEquals(Collections.EMPTY_LIST, orderDao.findOrdersByUserId(103));
+    }
 }

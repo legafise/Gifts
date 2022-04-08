@@ -20,7 +20,8 @@ VALUES (101, 101),
 
 INSERT INTO `users`
 VALUES (101, 'Oleg', 100.00),
-       (102, 'Ivan', 75.78);
+       (102, 'Ivan', 75.78),
+       (103, 'Zhora', 32.93);
 
 INSERT INTO `orders`
 VALUES (101, 101, 125.00, '2022-03-20 17:14:42'),

@@ -28,8 +28,6 @@ public class Order extends BaseEntity {
         this.purchaseTime = purchaseTime;
     }
 
-    // TODO: 29.03.2022 сделать тесто ордер и тест сертификат сущности
-
     public Order(Certificate certificate, BigDecimal price, LocalDateTime purchaseTime) {
         this.certificate = certificate;
         this.price = price;

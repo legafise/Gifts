@@ -1,6 +1,8 @@
 package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.localizer.MJCLocalizer;
+import com.epam.esm.converter.MJCEntityConversionException;
+import com.epam.esm.entity.BaseEntity;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,12 @@ public class MJCControllerExceptionHandler extends ResponseEntityExceptionHandle
     public ResponseEntity<MJCErrorResponse> handleInvalidPaginationDataException(MJCInvalidPaginationDataException e) {
         return createErrorResponse(e.getMessage(), MJCExceptionErrorStatus.findHttpStatusByException(e),
                 DEFAULT_ERROR_CODE.getErrorCode());
+    }
+
+    @ExceptionHandler(MJCEntityConversionException.class)
+    public ResponseEntity<MJCErrorResponse> handleMJCEntityConversionException(MJCEntityConversionException e) {
+        return createErrorResponse(e.getMessage(), MJCExceptionErrorStatus.findHttpStatusByException(e),
+                MJCEntityErrorCode.findErrorCodeByEntityClass(e.getEntityClass()).getErrorCode());
     }
 
     private ResponseEntity<MJCErrorResponse> createErrorResponse(String messageCode, HttpStatus status, String errorCode) {
